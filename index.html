@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Runner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;450;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Neutral monochrome — black, white, grey */
+    --canvas:    #f9f9f9;
+    --surface:   #ffffff;
+    --ink:       #18181a;
+
+    --ink-90:    rgba(24,24,26,.90);
+    --ink-72:    rgba(24,24,26,.72);
+    --ink-60:    rgba(24,24,26,.60);
+    --ink-50:    rgba(24,24,26,.50);
+    --ink-42:    rgba(24,24,26,.42);
+    --ink-32:    rgba(24,24,26,.32);
+    --ink-22:    rgba(24,24,26,.22);
+    --ink-12:    rgba(24,24,26,.12);
+    --ink-08:    rgba(24,24,26,.08);
+    --ink-055:   rgba(24,24,26,.055);
+    --ink-035:   rgba(24,24,26,.035);
+    --ink-02:    rgba(24,24,26,.02);
+
+    --hairline:  rgba(24,24,26,.10);
+    --hairline-soft: rgba(24,24,26,.065);
+
+    /* Accent role is carried by depth of grey, not hue */
+    --accent:        #18181a;
+    --accent-deep:   #000000;
+    --accent-12:     rgba(24,24,26,.10);
+    --accent-08:     rgba(24,24,26,.06);
+    --accent-tint:   rgba(24,24,26,.04);
+
+    --good:      #18181a;
+    --good-tint: rgba(24,24,26,.08);
+
+    --elev-sm: 0 1px 2px rgba(24,24,26,.04), 0 0 0 1px rgba(24,24,26,.05);
+    --elev-md: 0 4px 16px -4px rgba(24,24,26,.10), 0 0 0 1px rgba(24,24,26,.05);
+    --elev-pop: 0 12px 32px -8px rgba(24,24,26,.18), 0 0 0 1px rgba(24,24,26,.06);
+
+    --ui:   "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --sidebar-w: 224px;
+    --titlebar-h: 40px;
+    --r-sm: 6px;
+    --r-md: 9px;
+    --r-lg: 12px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: var(--ui);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--canvas);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv01", "cv03", "ss01";
+    letter-spacing: -0.003em;
+  }
+
+  /* faint ambient warmth at the top of the canvas */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(900px 380px at 72% -8%, rgba(24,24,26,.035), transparent 70%),
+      radial-gradient(700px 320px at 12% -4%, rgba(24,24,26,.022), transparent 65%);
+    pointer-events: none; z-index: 0;
+  }
+
+  ::selection { background: var(--accent-12); }
+
+  /* ════════════════════ TITLEBAR ════════════════════ */
+  .titlebar {
+    height: var(--titlebar-h); display: flex; align-items: center;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(251,250,247,.82);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--hairline-soft);
+  }
+  .traffic-lights { display: flex; align-items: center; gap: 8px; padding: 0 16px; width: var(--sidebar-w); flex-shrink: 0; }
+  .tl { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 .5px rgba(0,0,0,.14); }
+  .tl-r { background: #ff5f57; } .tl-y { background: #febc2e; } .tl-g { background: #28c840; }
+  .title-center {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    font-size: 12.5px; font-weight: 500; color: var(--ink-60);
+    letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;
+  }
+  .title-center .live { width: 6px; height: 6px; border-radius: 50%; background: var(--good); position: relative; }
+  .title-center .live { background: var(--ink-42); }
+  @keyframes ping { 0%{transform:scale(.8);opacity:.4;} 70%,100%{transform:scale(2.2);opacity:0;} }
+
+  .titlebar-right { margin-left: auto; display: flex; align-items: center; gap: 4px; padding-right: 14px; }
+  .kbd {
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    color: var(--ink-42); background: var(--ink-035);
+    border: 1px solid var(--hairline-soft); border-radius: 5px;
+    padding: 3px 7px; display: flex; align-items: center; gap: 3px;
+    cursor: pointer; transition: all .12s ease;
+  }
+  .kbd:hover { color: var(--ink-72); background: var(--ink-055); }
+  .tb-btn { width: 28px; height: 28px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-42); transition: all .12s ease; }
+  .tb-btn:hover { background: var(--ink-055); color: var(--ink-90); }
+  .tb-btn svg { width: 15px; height: 15px; }
+
+  /* ════════════════════ BODY ROW ════════════════════ */
+  .body-row { display: flex; padding-top: var(--titlebar-h); min-height: 100vh; position: relative; z-index: 1; }
+
+  /* ════════════════════ SIDEBAR ════════════════════ */
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0; display: flex; flex-direction: column;
+    background: transparent; border-right: 1px solid var(--hairline-soft);
+    position: fixed; top: var(--titlebar-h); left: 0; bottom: 0; overflow-y: auto;
+  }
+  .sidebar-top { display: flex; align-items: center; padding: 10px 10px 6px; gap: 4px; }
+  .new-session {
+    flex: 1; display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: var(--r-sm);
+    font-size: 13px; font-weight: 500; color: var(--ink-72);
+    background: var(--surface); border: 1px solid var(--hairline);
+    box-shadow: var(--elev-sm); cursor: pointer; transition: all .12s ease;
+  }
+  .new-session:hover { color: var(--ink); border-color: var(--ink-22); transform: translateY(-0.5px); }
+  .new-session .ns-plus { color: var(--accent); display: flex; }
+  .new-session .ns-plus svg { width: 14px; height: 14px; }
+  .new-session .ns-kbd { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--ink-32); }
+  .icon-btn { width: 30px; height: 30px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-32); transition: all .12s ease; flex-shrink: 0; }
+  .icon-btn:hover { background: var(--ink-055); color: var(--ink-60); }
+  .icon-btn svg { width: 15px; height: 15px; }
+
+  .sidebar-label { font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-32); padding: 14px 16px 6px; }
+  .sessions { flex: 1; padding: 0 6px; }
+  .session-item {
+    display: flex; align-items: center; padding: 0 8px 0 11px; height: 30px;
+    border-radius: var(--r-sm); cursor: pointer; position: relative;
+    transition: background .1s ease;
+  }
+  .session-item:hover { background: var(--ink-055); }
+  .session-item.active { background: var(--ink-08); }
+  .session-item.active::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    height: 15px; width: 2.5px; background: var(--accent); border-radius: 99px;
+  }
+  .session-title { flex: 1; font-size: 13px; color: var(--ink-60); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.006em; }
+  .session-item.active .session-title { color: var(--ink); font-weight: 500; }
+  .session-item:hover .session-title { color: var(--ink-90); }
+  .session-icons { display: flex; align-items: center; gap: 3px; flex-shrink: 0; margin-left: 6px; }
+  .session-icons svg { width: 12px; height: 12px; color: var(--ink-32); }
+  .session-time { font-family: var(--mono); font-size: 10.5px; color: var(--ink-32); margin-left: 7px; flex-shrink: 0; }
+
+  .sidebar-bottom { padding: 8px 6px 10px; }
+  .sidebar-divider { height: 1px; background: var(--hairline-soft); margin: 8px 10px; }
+  .bottom-item { display: flex; align-items: center; gap: 10px; padding: 0 11px; height: 30px; border-radius: var(--r-sm); cursor: pointer; transition: background .1s ease; }
+  .bottom-item:hover { background: var(--ink-055); }
+  .bi-icon { color: var(--ink-42); display: flex; flex-shrink: 0; }
+  .bi-icon svg { width: 15px; height: 15px; }
+  .bi-label { flex: 1; font-size: 13px; color: var(--ink-60); letter-spacing: -0.006em; }
+  .bottom-item:hover .bi-label { color: var(--ink-90); }
+  .bottom-item:hover .bi-icon { color: var(--ink-72); }
+  .bi-count { font-family: var(--mono); font-size: 10.5px; color: var(--ink-42); }
+  .workspace-item { display: flex; align-items: center; gap: 9px; padding: 7px 9px; border-radius: var(--r-sm); cursor: pointer; transition: background .1s ease; margin-top: 2px; }
+  .workspace-item:hover { background: var(--ink-055); }
+  .ws-icon { width: 20px; height: 20px; border-radius: 6px; background: linear-gradient(150deg, var(--accent), var(--accent-deep)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: var(--elev-sm); }
+  .ws-icon svg { width: 11px; height: 11px; color: #fff; }
+  .ws-label { font-size: 13px; color: var(--ink-72); font-weight: 500; flex: 1; }
+  .ws-chevron { color: var(--ink-32); }
+  .ws-chevron svg { width: 13px; height: 13px; }
+
+  /* ════════════════════ MAIN ════════════════════ */
+  .main { flex: 1; margin-left: var(--sidebar-w); min-width: 0; }
+  .content { padding: 52px 60px 80px; max-width: 1240px; }
+
+  /* ── Hero ── */
+  .hero { margin-bottom: 36px; }
+  .greeting { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; color: var(--ink); }
+  .greeting .accent { color: var(--accent); }
+  .status-line { display: flex; align-items: center; margin-top: 14px; flex-wrap: wrap; row-gap: 4px; }
+  .stat { display: inline-flex; align-items: baseline; gap: 5px; font-size: 13px; color: var(--ink-50); }
+  .stat b { font-family: var(--mono); font-weight: 500; font-size: 12.5px; color: var(--ink-72); }
+  .stat.prio { align-items: center; gap: 6px; color: var(--ink-90); }
+  .stat.prio svg { width: 12px; height: 12px; color: var(--ink-50); flex-shrink: 0; }
+  .stat-sep { color: var(--ink-22); margin: 0 10px; font-size: 11px; }
+
+  /* ── The recommendation: the agent's signature moment ── */
+  .rec {
+    position: relative; margin-bottom: 40px;
+    border-radius: var(--r-lg);
+    background:
+      linear-gradient(180deg, rgba(24,24,26,.05), rgba(24,24,26,.022));
+    border: 1px solid rgba(24,24,26,.13);
+    box-shadow: 0 1px 2px rgba(33,32,27,.04);
+    padding: 22px 24px 20px;
+    overflow: hidden;
+  }
+  .rec::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-deep));
+  }
+  .rec-top { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
+  .rec-agent { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: .02em; color: var(--accent-deep); }
+  .rec-agent .orb { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); position: relative; }
+  .rec-agent .orb::after { display: none; }
+  .rec-flag { font-family: var(--mono); font-size: 10.5px; font-weight: 500; color: var(--accent-deep); background: rgba(24,24,26,.08); padding: 2px 7px; border-radius: 5px; letter-spacing: 0; }
+  .rec-dismiss { margin-left: auto; color: var(--ink-32); cursor: pointer; display: flex; padding: 3px; border-radius: 5px; transition: all .12s; }
+  .rec-dismiss:hover { color: var(--ink-72); background: var(--ink-055); }
+  .rec-dismiss svg { width: 14px; height: 14px; }
+  .rec-text { font-size: 15px; line-height: 1.62; color: var(--ink-90); letter-spacing: -0.011em; max-width: 76ch; }
+  .rec-text strong { font-weight: 600; }
+  .rec-text .od { color: var(--accent-deep); font-weight: 600; }
+  .rec-actions { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+
+  /* ── Buttons ── */
+  .btn {
+    font-family: var(--ui); font-size: 12.5px; font-weight: 500; letter-spacing: -0.006em;
+    padding: 7px 13px; border-radius: var(--r-sm); cursor: pointer;
+    border: 1px solid var(--hairline); background: var(--surface); color: var(--ink-72);
+    box-shadow: var(--elev-sm); transition: all .12s ease; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { color: var(--ink); border-color: var(--ink-22); transform: translateY(-0.5px); }
+  .btn:active { transform: translateY(0); }
+  .btn svg { width: 13px; height: 13px; }
+  .btn.primary { background: var(--ink); border-color: var(--ink); color: #fbfaf7; box-shadow: 0 1px 2px rgba(33,32,27,.18); }
+  .btn.primary:hover { background: #2c2a23; border-color: #2c2a23; color: #fff; }
+  .btn.accent { background: linear-gradient(180deg, #2a2a2c, #18181a); border-color: #000; color: #fff; box-shadow: 0 1px 2px rgba(24,24,26,.28); }
+  .btn.accent:hover { filter: brightness(1.05); }
+  .btn.ghost { background: transparent; border-color: transparent; box-shadow: none; color: var(--ink-50); padding: 7px 9px; }
+  .btn.ghost:hover { background: var(--ink-055); color: var(--ink-90); transform: none; }
+  .btn.sm { font-size: 12px; padding: 5px 10px; }
+
+  /* ── Grid ── */
+  .grid-top { display: grid; grid-template-columns: 1fr 372px; gap: 24px; margin-bottom: 24px; }
+
+  /* ── Panels ── */
+  .panel { border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-sm); overflow: hidden; }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; border-bottom: 1px solid var(--hairline-soft); }
+  .panel-title { font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-50); }
+  .panel-link { font-size: 12px; color: var(--ink-42); cursor: pointer; background: none; border: none; font-family: var(--ui); display: inline-flex; align-items: center; gap: 4px; transition: color .12s; letter-spacing: -0.006em; }
+  .panel-link:hover { color: var(--ink-90); }
+  .panel-link svg { width: 12px; height: 12px; }
+  .inbox-counts { display: flex; align-items: center; gap: 11px; }
+  .inbox-ch { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-42); }
+  .inbox-ch svg { width: 13px; height: 13px; color: var(--ink-32); }
+
+  /* channel glyph color hints */
+  .ch-mail { color: var(--ink-42) !important; }
+  .ch-chat { color: var(--ink-42) !important; }
+  .ch-wa   { color: var(--ink-42) !important; }
+  .ch-teams{ color: var(--ink-42) !important; }
+
+  /* ── Inbox messages ── */
+  .msg-row { border-bottom: 1px solid var(--hairline-soft); }
+  .msg-row:last-child { border-bottom: none; }
+  .msg-line { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; transition: background .1s ease; }
+  .msg-line:hover, .msg-row.open .msg-line { background: var(--ink-035); }
+  .msg-ch { display: flex; flex-shrink: 0; }
+  .msg-ch svg { width: 14px; height: 14px; }
+  .msg-sender { font-size: 13px; font-weight: 550; color: var(--ink-90); flex-shrink: 0; letter-spacing: -0.008em; }
+  .msg-gist { font-size: 13px; color: var(--ink-50); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.006em; }
+  .msg-gist::before { content: '·\00a0\00a0'; color: var(--ink-22); }
+  .msg-time { font-family: var(--mono); font-size: 11px; color: var(--ink-32); flex-shrink: 0; }
+  .msg-caret { display: flex; color: var(--ink-22); flex-shrink: 0; transition: transform .18s ease, color .12s; }
+  .msg-caret svg { width: 14px; height: 14px; }
+  .msg-line:hover .msg-caret { color: var(--ink-42); }
+  .msg-row.open .msg-caret { transform: rotate(90deg); }
+  .msg-expand { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s ease; }
+  .msg-row.open .msg-expand { grid-template-rows: 1fr; }
+  .msg-expand-inner { overflow: hidden; }
+  .msg-expand-pad { padding: 4px 18px 18px; }
+  .draft-block {
+    border-radius: var(--r-sm); background: var(--surface);
+    border: 1px solid var(--hairline); box-shadow: var(--elev-md);
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .draft-label { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-deep); display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
+  .draft-label .orb { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .draft-text { font-size: 13px; color: var(--ink-90); line-height: 1.6; letter-spacing: -0.006em; }
+  .msg-actions { display: flex; gap: 7px; }
+
+  /* ── Meetings ── */
+  .mtg-day { font-family: var(--mono); font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-32); padding: 15px 18px 7px; }
+  .mtg-day:first-of-type { padding-top: 10px; }
+  .mtg-day .soon { color: var(--accent-deep); }
+  .meeting-row { display: flex; align-items: flex-start; gap: 14px; padding: 10px 18px; cursor: pointer; transition: background .1s ease; position: relative; }
+  .meeting-row:hover { background: var(--ink-035); }
+  .meeting-time { font-family: var(--mono); font-size: 11.5px; color: var(--ink-60); min-width: 58px; flex-shrink: 0; padding-top: 1px; font-weight: 500; }
+  .meeting-info { flex: 1; min-width: 0; }
+  .meeting-title { font-size: 13px; color: var(--ink-90); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 450; letter-spacing: -0.006em; }
+  .meeting-sub { font-size: 11.5px; color: var(--ink-42); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+  .meeting-sub svg { width: 11px; height: 11px; flex-shrink: 0; color: var(--ink-32); }
+  .meeting-sub .ready { color: var(--good); display: inline-flex; align-items: center; gap: 3px; }
+  .meeting-sub .ready svg { color: var(--good); width: 10px; height: 10px; }
+
+  /* ── Tasks ── */
+  .tasks-panel { border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-sm); overflow: hidden; }
+  .tasks-body { padding: 10px; }
+  .task-section { margin-bottom: 4px; }
+  .task-section:last-child { margin-bottom: 0; }
+  .task-sec-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 7px; margin-top: 12px; }
+  .task-section:first-child .task-sec-head { margin-top: 0; }
+  .task-sec-title { font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-42); }
+  .task-section.prio .task-sec-title { color: var(--accent-deep); }
+  .task-sec-count { font-family: var(--mono); font-size: 10.5px; color: var(--ink-32); }
+  .task-sec-line { flex: 1; height: 1px; background: var(--hairline-soft); }
+
+  .task-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; cursor: pointer; transition: background .1s ease; border-radius: var(--r-sm); }
+  .task-row:hover { background: var(--ink-035); }
+  .task-cb { width: 16px; height: 16px; border: 1.5px solid var(--ink-22); border-radius: 5px; flex-shrink: 0; transition: all .14s ease; display: flex; align-items: center; justify-content: center; background: var(--surface); }
+  .task-row:hover .task-cb { border-color: var(--ink-42); }
+  .task-cb svg { width: 10px; height: 10px; color: #fff; opacity: 0; transform: scale(.5); transition: all .16s cubic-bezier(.2,1.4,.4,1); }
+  .task-text { flex: 1; font-size: 13.5px; color: var(--ink-90); letter-spacing: -0.008em; transition: color .14s ease; }
+  .task-tag { font-family: var(--mono); font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 5px; text-transform: uppercase; letter-spacing: .02em; flex-shrink: 0; color: var(--ink-50); background: var(--ink-055); }
+  .task-meta { font-family: var(--mono); font-size: 10.5px; color: var(--ink-32); flex-shrink: 0; }
+  .task-due {
+    font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--ink-42);
+    background: var(--ink-035); border: 1px solid var(--hairline-soft);
+    padding: 2px 7px 2px 6px; border-radius: 5px; flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 4px; letter-spacing: .01em;
+  }
+  .task-due svg { width: 9px; height: 9px; opacity: .65; }
+  .task-row.done .task-due { opacity: .5; }
+
+  /* priority row */
+  .task-row.priority {
+    background: linear-gradient(180deg, rgba(24,24,26,.06), rgba(24,24,26,.03));
+    box-shadow: inset 0 0 0 1px rgba(24,24,26,.12);
+  }
+  .task-row.priority:hover { background: linear-gradient(180deg, rgba(24,24,26,.09), rgba(24,24,26,.045)); }
+  .task-row.priority .task-text { font-weight: 550; color: var(--ink); }
+  .task-row.priority .task-cb { border-color: var(--accent); }
+  .task-row.priority .task-tag { background: rgba(24,24,26,.12); color: var(--ink-90); }
+  .task-row.priority .task-meta { color: var(--accent-deep); }
+
+  /* completed */
+  .task-row.done .task-cb { background: var(--good); border-color: var(--good); }
+  .task-row.done .task-cb svg { opacity: 1; transform: scale(1); }
+  .task-row.done .task-text { color: var(--ink-32); text-decoration: line-through; text-decoration-color: var(--ink-22); }
+  .task-row.done .task-tag, .task-row.done .task-meta { opacity: .5; }
+  .task-row.done.priority { background: transparent; box-shadow: none; }
+  .task-row.done.priority .task-cb { border-color: var(--good); }
+
+  /* ── entrance choreography ── */
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .rise { opacity: 0; animation: rise .55s cubic-bezier(.22,1,.36,1) forwards; }
+  .d1 { animation-delay: .04s; } .d2 { animation-delay: .10s; }
+  .d3 { animation-delay: .17s; } .d4 { animation-delay: .25s; }
+
+  /* ── scrollbar ── */
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--ink-12); border-radius: 99px; border: 2px solid transparent; background-clip: padding-box; }
+  .sidebar::-webkit-scrollbar-thumb:hover { background: var(--ink-22); background-clip: padding-box; }
+
+  /* ── quick actions / command ── */
+  .qa-wrap { position: relative; }
+  .qa-dropdown {
+    display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 248px;
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-md);
+    box-shadow: var(--elev-pop); z-index: 100; overflow: hidden; padding: 5px;
+  }
+  .qa-wrap.open .qa-dropdown { display: block; animation: rise .18s ease forwards; }
+  .qa-section-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-32); padding: 7px 9px 4px; }
+  .qa-item { display: flex; align-items: center; gap: 10px; padding: 8px 9px; border-radius: var(--r-sm); cursor: pointer; font-size: 13px; color: var(--ink-72); transition: background .1s ease; letter-spacing: -0.006em; }
+  .qa-item:hover { background: var(--ink-055); color: var(--ink); }
+  .qa-item svg { width: 15px; height: 15px; color: var(--ink-42); flex-shrink: 0; }
+  .qa-item:hover svg { color: var(--ink-72); }
+  .qa-item .qa-kbd { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--ink-32); }
+
+  @media (max-width: 940px) {
+    .grid-top { grid-template-columns: 1fr; }
+    .content { padding: 40px 32px 64px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ TITLEBAR ════════════════ -->
+<div class="titlebar">
+  <div class="traffic-lights">
+    <div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div>
+  </div>
+  <div class="title-center"><span class="live"></span> Sunday, May 24</div>
+  <div class="titlebar-right">
+    <div class="kbd" id="cmdK"><span>⌘</span>K</div>
+    <div class="tb-btn" title="Layout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+    </div>
+    <div class="tb-btn" title="More">
+      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+    </div>
+  </div>
+</div>
+
+<div class="body-row">
+
+  <!-- ════════════════ SIDEBAR ════════════════ -->
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <div class="new-session">
+        <span class="ns-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></span>
+        New Session
+        <span class="ns-kbd">⌘N</span>
+      </div>
+      <div class="icon-btn" title="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </div>
+    </div>
+
+    <div class="sidebar-label">Sessions</div>
+    <div class="sessions">
+      <div class="session-item active"><span class="session-title">Home</span></div>
+      <div class="session-item">
+        <span class="session-title">Design Runner home page</span>
+        <div class="session-icons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
+        <span class="session-time">1h</span>
+      </div>
+      <div class="session-item"><span class="session-title">Answer UFD question</span><span class="session-time">3h</span></div>
+      <div class="session-item"><span class="session-title">Session cleanup · every 120m</span><span class="session-time">5h</span></div>
+      <div class="session-item">
+        <span class="session-title">Weekend prep + Mon brief</span>
+        <div class="session-icons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></div>
+        <span class="session-time">1d</span>
+      </div>
+      <div class="session-item"><span class="session-title">Get visa status update</span><span class="session-time">2d</span></div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-divider"></div>
+      <div class="bottom-item">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span>
+        <span class="bi-label">Automations</span><span class="bi-count">2</span>
+      </div>
+      <div class="bottom-item">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l2.2 5.6L20 10l-5.8 1.4L12 17l-2.2-5.6L4 10l5.8-1.4z"/></svg></span>
+        <span class="bi-label">Skills Library</span><span class="bi-count">16</span>
+      </div>
+      <div class="bottom-item">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 13v8M13 17h8"/></svg></span>
+        <span class="bi-label">Connected Apps</span>
+      </div>
+      <div class="bottom-item">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a4 4 0 0 0-4 4v1a4 4 0 0 0 0 8v1a4 4 0 0 0 8 0v-1a4 4 0 0 0 0-8V7a4 4 0 0 0-4-4z"/></svg></span>
+        <span class="bi-label">Memory</span><span class="bi-count">29</span>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="workspace-item">
+        <div class="ws-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8.7 5v10L12 22l-8.7-5V7z"/></svg></div>
+        <span class="ws-label">My Workspace</span>
+        <span class="ws-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ MAIN ════════════════ -->
+  <div class="main">
+    <div class="content">
+
+      <!-- HERO -->
+      <div class="hero rise d1">
+        <div class="greeting">Good evening, Mark</div>
+        <div class="status-line">
+          <span class="stat"><b>25</b> unread</span>
+          <span class="stat-sep">·</span>
+          <span class="stat"><b>2</b> meetings today</span>
+          <span class="stat-sep">·</span>
+          <span class="stat prio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 21V4M5 4h12l-2.4 3.5L17 11H5"/></svg> Send designs to Tom</span>
+        </div>
+      </div>
+
+      <!-- THE RECOMMENDATION -->
+      <div class="rec rise d2" id="rec">
+        <div class="rec-top">
+          <span class="rec-agent"><span class="orb"></span> RUNNER</span>
+          <span class="rec-flag">Overdue · 2 days</span>
+          <span class="rec-dismiss" onclick="document.getElementById('rec').style.display='none'" title="Dismiss">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </span>
+        </div>
+        <div class="rec-text">
+          The <strong>new designs</strong> for <strong>Tom</strong> were due <span class="od">two days ago</span>. Want to wrap them now — or should I message Tom to let him know they're still in progress and land tomorrow?
+        </div>
+        <div class="rec-actions">
+          <button class="btn accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            Finish now
+          </button>
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5h16v14H4z"/><path d="m4 7 8 6 8-6"/></svg>
+            Draft update to Tom
+          </button>
+          <button class="btn ghost sm">Snooze</button>
+        </div>
+      </div>
+
+      <!-- GRID: INBOX + MEETINGS -->
+      <div class="grid-top">
+
+        <!-- INBOX -->
+        <div class="panel rise d3">
+          <div class="panel-header">
+            <span class="panel-title">Inbox</span>
+            <div class="inbox-counts">
+              <span class="inbox-ch"><svg class="ch-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>14</span>
+              <span class="inbox-ch"><svg class="ch-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-11.3 7.3L3 21l1.7-6.7A8 8 0 1 1 21 12z"/></svg>3</span>
+              <span class="inbox-ch"><svg class="ch-wa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.7-5.2A8.5 8.5 0 1 1 21 11.5z"/></svg>6</span>
+              <span class="inbox-ch"><svg class="ch-teams" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 9h4a1 1 0 0 1 1 1v5a3 3 0 0 1-3 3h-2"/></svg>2</span>
+              <button class="panel-link" style="margin-left:3px;">View all
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="msg-row open">
+            <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
+              <span class="msg-ch"><svg class="ch-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+              <span class="msg-sender">Tyler Lasicki</span>
+              <span class="msg-gist">Asking for intro to Samira; Lattice pilot closed</span>
+              <span class="msg-time">22m</span>
+              <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
+              <div class="draft-block">
+                <div class="draft-label"><span class="orb"></span> Runner draft</div>
+                <div class="draft-text">Hey Tyler — huge congrats on the Lattice pilot and 1.2k MAU, real momentum. Happy to intro you to Samira; she's been asking about consumer plays. Want me to send a forwardable blurb?</div>
+              </div>
+              <div class="msg-actions">
+                <button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button>
+              </div>
+            </div></div></div>
+          </div>
+
+          <div class="msg-row">
+            <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
+              <span class="msg-ch"><svg class="ch-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-11.3 7.3L3 21l1.7-6.7A8 8 0 1 1 21 12z"/></svg></span>
+              <span class="msg-sender">Charlie Feng</span>
+              <span class="msg-gist">Dinner tmrw at Abbot Kinney, Pam too</span>
+              <span class="msg-time">1h</span>
+              <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
+              <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Dude, yes — looped Pam in. Let's do 7pm at Felix? I'll book it.</div></div>
+              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button></div>
+            </div></div></div>
+          </div>
+
+          <div class="msg-row">
+            <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
+              <span class="msg-ch"><svg class="ch-teams" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 9h4a1 1 0 0 1 1 1v5a3 3 0 0 1-3 3h-2"/></svg></span>
+              <span class="msg-sender">Shoshana</span>
+              <span class="msg-gist">Q2 OKR review bumped to Tues 9am; Jared's deck</span>
+              <span class="msg-time">4h</span>
+              <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
+              <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Thanks for flagging — I'll ping Jared this evening so the deck lands Monday. Appreciate you keeping eyes on it.</div></div>
+              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button></div>
+            </div></div></div>
+          </div>
+        </div>
+
+        <!-- MEETINGS -->
+        <div class="panel rise d3">
+          <div class="panel-header">
+            <span class="panel-title">Upcoming</span>
+            <button class="panel-link">Calendar
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+            </button>
+          </div>
+
+          <div class="mtg-day">Tomorrow <span class="soon">· Mon May 25</span></div>
+          <div class="meeting-row">
+            <span class="meeting-time">9:00 AM</span>
+            <div class="meeting-info">
+              <div class="meeting-title">Kent · networking sync</div>
+              <div class="meeting-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.2-7-10a7 7 0 0 1 14 0c0 4.8-7 10-7 10z"/><circle cx="12" cy="11" r="2.4"/></svg> In person · Erewhon</div>
+            </div>
+          </div>
+          <div class="meeting-row">
+            <span class="meeting-time">11:30 AM</span>
+            <div class="meeting-info">
+              <div class="meeting-title">Trowbridge · tax review</div>
+              <div class="meeting-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg> Zoom · Logan</div>
+            </div>
+          </div>
+
+          <div class="mtg-day">Tue May 26</div>
+          <div class="meeting-row">
+            <span class="meeting-time">9:30 AM</span>
+            <div class="meeting-info">
+              <div class="meeting-title">Kay · 1:1</div>
+              <div class="meeting-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg> Teams</div>
+            </div>
+          </div>
+          <div class="meeting-row">
+            <span class="meeting-time">10:00 AM</span>
+            <div class="meeting-info">
+              <div class="meeting-title">Samira · a16z bi-weekly</div>
+              <div class="meeting-sub"><span class="ready"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Prep brief ready</span></div>
+            </div>
+          </div>
+          <div class="meeting-row">
+            <span class="meeting-time">2:00 PM</span>
+            <div class="meeting-info">
+              <div class="meeting-title">Peakmojo sprint review</div>
+              <div class="meeting-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg> Peijun, Tian, Bary</div>
+            </div>
+          </div>
+
+          <div class="mtg-day">Wed May 27</div>
+          <div class="meeting-row" style="padding-bottom:14px;">
+            <span class="meeting-time">2:00 PM</span>
+            <div class="meeting-info">
+              <div class="meeting-title">AskSAMIE deep dive</div>
+              <div class="meeting-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg> Willie, Dr. Brandy</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /grid-top -->
+
+      <!-- TASKS -->
+      <div class="tasks-panel rise d4">
+        <div class="panel-header">
+          <span class="panel-title">Tasks</span>
+          <button class="panel-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Add task
+          </button>
+        </div>
+        <div class="tasks-body">
+
+          <div class="task-section prio">
+            <div class="task-sec-head">
+              <span class="task-sec-title">Top Priority</span>
+              <span class="task-sec-line"></span>
+              <span class="task-sec-count">1</span>
+            </div>
+            <div class="task-row priority" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Send new designs to Tom</div>
+              <span class="task-meta">Due 2d ago</span>
+              <span class="task-tag">Design</span>
+            </div>
+          </div>
+
+          <div class="task-section">
+            <div class="task-sec-head">
+              <span class="task-sec-title">Left over</span>
+              <span class="task-sec-line"></span>
+              <span class="task-sec-count">3</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Review Akido Q2 OKRs with Jared</div>
+              <span class="task-tag">Akido</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Reply to Willie re: AskSAMIE invite</div>
+              <span class="task-tag">Admin</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Review Maggi's Sumly update</div>
+              <span class="task-tag">Sumly</span>
+            </div>
+          </div>
+
+          <div class="task-section">
+            <div class="task-sec-head">
+              <span class="task-sec-title">New today</span>
+              <span class="task-sec-line"></span>
+              <span class="task-sec-count">3</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Prep notes for Samira sync Tuesday</div>
+              <span class="task-tag">Admin</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Follow up with Tyler (Gild)</div>
+              <span class="task-tag">Gild</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Check in with Peijun on sprint</div>
+              <span class="task-tag">Peakmojo</span>
+            </div>
+          </div>
+
+          <div class="task-section">
+            <div class="task-sec-head">
+              <span class="task-sec-title">Future</span>
+              <span class="task-sec-line"></span>
+              <span class="task-sec-count">3</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Send forwardable blurb to Tyler for Samira intro</div>
+              <span class="task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Thu 29</span>
+              <span class="task-tag">Gild</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Ping Jared — OKR deck must land by Monday night</div>
+              <span class="task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Mon 25</span>
+              <span class="task-tag">Akido</span>
+            </div>
+            <div class="task-row" onclick="toggleTask(this)">
+              <div class="task-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="task-text">Book Google Meet for Willie · Wed 2pm PT</div>
+              <span class="task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Wed 27</span>
+              <span class="task-tag">AskSAMIE</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleTask(row) {
+    row.classList.toggle('done');
+  }
+  // command palette hint feedback
+  document.getElementById('cmdK').addEventListener('click', function() {
+    this.style.transform = 'scale(.94)';
+    setTimeout(() => this.style.transform = '', 120);
+  });
+  document.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      document.getElementById('cmdK').click();
+    }
+  });
+</script>
+</body>
+</html>
