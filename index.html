@@ -477,7 +477,7 @@
   }
   .session-header-left { display: flex; align-items: center; gap: 8px; }
   .session-orb { width: 20px; height: 20px; border-radius: 5px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-  .session-title { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.45); letter-spacing: -0.01em; }
+  .session-modal-title { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.45); letter-spacing: -0.01em; }
   .session-close { width: 24px; height: 24px; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.3); transition: all .1s; border: none; background: none; }
   .session-close:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
   .session-close svg { width: 13px; height: 13px; }
@@ -1298,7 +1298,7 @@
     <div class="session-header">
       <div class="session-header-left">
         <span class="session-orb">🏃</span>
-        <span class="session-title" id="sessionTitle">New session</span>
+        <span class="session-modal-title" id="sessionTitle">New session</span>
       </div>
       <button class="session-close" onclick="document.getElementById('sessionModal').classList.remove('open')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
