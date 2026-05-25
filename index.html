@@ -475,6 +475,18 @@
   .meeting-row.next-up .meeting-join { opacity: 1; background: var(--ink); border-color: var(--ink); color: #fff; }
   .meeting-join:hover { color: var(--ink); border-color: var(--ink-22); }
 
+  /* meeting brief expand */
+  .meeting-row-wrap { border-bottom: 1px solid var(--hairline-soft); }
+  .meeting-row-wrap .meeting-row { border-bottom: none; }
+  .mtg-brief { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s ease; }
+  .mtg-brief.open { grid-template-rows: 1fr; }
+  .mtg-brief-inner { overflow: hidden; }
+  .mtg-brief-pad { padding: 0 18px 16px 18px; }
+  .mtg-brief-section { margin-bottom: 12px; }
+  .mtg-brief-label { font-family: var(--mono); font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-32); margin-bottom: 4px; }
+  .mtg-brief-text { font-size: 12.5px; color: var(--ink-72); line-height: 1.6; letter-spacing: -0.006em; }
+  .mtg-brief-actions { display: flex; gap: 7px; margin-top: 14px; }
+
   /* ── Tasks ── */
   .tasks-panel { border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-sm); overflow: hidden; }
   .tasks-body { padding: 10px; }
@@ -1003,14 +1015,38 @@
             </div>
             <button class="meeting-join">Join</button>
           </div>
-          <div class="meeting-row">
+          <div class="meeting-row-wrap">
+          <div class="meeting-row" id="samiraMtg">
             <span class="meeting-time">10:00 AM</span>
             <div class="meeting-info">
               <div class="meeting-title">Samira · a16z bi-weekly</div>
               <div class="meeting-sub"><span class="ready"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Prep brief ready</span></div>
             </div>
-            <button class="meeting-join">Brief</button>
+            <button class="meeting-join" onclick="document.getElementById('samiraBrief').classList.toggle('open');event.stopPropagation()">Brief</button>
             <button class="meeting-join">Join</button>
+          </div>
+          <div class="mtg-brief" id="samiraBrief">
+            <div class="mtg-brief-inner">
+              <div class="mtg-brief-pad">
+                <div class="mtg-brief-section">
+                  <div class="mtg-brief-label">Meeting goal</div>
+                  <div class="mtg-brief-text">Walk through the consumer thesis and get Samira's read on Gild's positioning. You mentioned sending a one-pager tonight — Runner has a draft ready.</div>
+                </div>
+                <div class="mtg-brief-section">
+                  <div class="mtg-brief-label">Context from your history</div>
+                  <div class="mtg-brief-text">Last meeting (Apr 28) ended with Samira asking about MAU retention. Tyler Lasicki just closed a Lattice pilot — she's been asking about consumer plays, which aligns with the Gild intro you're planning.</div>
+                </div>
+                <div class="mtg-brief-section">
+                  <div class="mtg-brief-label">Suggested talking points</div>
+                  <div class="mtg-brief-text">1. Consumer thesis framing — why now<br>2. Gild traction & team<br>3. Tyler intro — ask if she wants a forwardable blurb</div>
+                </div>
+                <div class="mtg-brief-actions">
+                  <button class="btn sm">Open one-pager draft</button>
+                  <button class="btn ghost sm">Ask Runner to prep more</button>
+                </div>
+              </div>
+            </div>
+          </div>
           </div>
           <div class="meeting-row">
             <span class="meeting-time">2:00 PM</span>
