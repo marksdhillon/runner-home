@@ -293,6 +293,63 @@
   .btn.ghost:hover { background: var(--ink-055); color: var(--ink-90); transform: none; }
   .btn.sm { font-size: 12px; padding: 5px 10px; }
 
+  /* ── Add Task Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 300;
+    background: rgba(24,24,26,.32); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: var(--r-lg); box-shadow: var(--elev-pop);
+    width: 520px; max-width: calc(100vw - 48px);
+    animation: rise .2s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 14px; border-bottom: 1px solid var(--hairline-soft);
+  }
+  .modal-title { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+  .modal-close { width: 26px; height: 26px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-32); transition: all .12s; border: none; background: none; }
+  .modal-close:hover { background: var(--ink-055); color: var(--ink-72); }
+  .modal-close svg { width: 14px; height: 14px; }
+  .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-footer { padding: 12px 20px 16px; border-top: 1px solid var(--hairline-soft); display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .field label { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-50); }
+  .field input, .field select, .field textarea {
+    font-family: var(--ui); font-size: 13px; color: var(--ink);
+    background: var(--canvas); border: 1px solid var(--hairline);
+    border-radius: var(--r-sm); padding: 8px 10px;
+    transition: border-color .12s, box-shadow .12s;
+    outline: none; width: 100%;
+    letter-spacing: -0.004em;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--ink-42); box-shadow: 0 0 0 3px var(--ink-055);
+  }
+  .field textarea { resize: none; line-height: 1.55; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--ink-28); }
+  .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; padding-right: 28px; }
+  .field-hint { font-size: 11px; color: var(--ink-42); margin-top: 2px; line-height: 1.45; letter-spacing: -0.003em; }
+  .priority-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .priority-opt { display: none; }
+  .priority-label {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 8px 6px; border-radius: var(--r-sm); border: 1px solid var(--hairline);
+    cursor: pointer; transition: all .12s; text-align: center; font-size: 11.5px;
+    color: var(--ink-60); font-weight: 500; letter-spacing: -0.004em;
+  }
+  .priority-label:hover { border-color: var(--ink-22); background: var(--ink-035); }
+  .priority-opt:checked + .priority-label { border-color: var(--ink); background: var(--ink); color: #fff; }
+  .priority-emoji { font-size: 15px; }
+
+
   /* ── Grid ── */
   .grid-top { display: grid; grid-template-columns: 1fr 372px; gap: 24px; margin-bottom: 24px; }
 
@@ -916,7 +973,7 @@
       <div class="tasks-panel rise d4">
         <div class="panel-header">
           <span class="panel-title">Things To Do</span>
-          <button class="btn primary sm">
+          <button class="btn primary sm" onclick="document.getElementById('addTaskModal').classList.add('open')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
             Add task
           </button>
@@ -1016,7 +1073,90 @@
   </div>
 </div>
 
-<!-- Floating quick actions -->
+<!-- Add Task Modal -->
+<div class="modal-overlay" id="addTaskModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">New Task</span>
+      <button class="modal-close" onclick="document.getElementById('addTaskModal').classList.remove('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="field">
+        <label>Task</label>
+        <input type="text" placeholder="What needs to get done?" />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Due Date</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>Est. Hours</label>
+          <input type="number" placeholder="e.g. 2.5" min="0" step="0.5" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Priority</label>
+        <div class="priority-row">
+          <span><input class="priority-opt" type="radio" name="priority" id="p-low" value="low"><label class="priority-label" for="p-low"><span class="priority-emoji">🟢</span>Low</label></span>
+          <span><input class="priority-opt" type="radio" name="priority" id="p-med" value="medium"><label class="priority-label" for="p-med"><span class="priority-emoji">🟡</span>Medium</label></span>
+          <span><input class="priority-opt" type="radio" name="priority" id="p-high" value="high" checked><label class="priority-label" for="p-high"><span class="priority-emoji">🔴</span>High</label></span>
+          <span><input class="priority-opt" type="radio" name="priority" id="p-block" value="blocking"><label class="priority-label" for="p-block"><span class="priority-emoji">🚨</span>Blocking</label></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Why it matters <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-32)">— help Runner understand context</span></label>
+        <textarea rows="2" placeholder="e.g. This unblocks the Akido sprint review and Tom is waiting on it…"></textarea>
+        <span class="field-hint">Runner uses this to prioritize, draft follow-ups, and flag if something else depends on it.</span>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Project / Area</label>
+          <select>
+            <option value="">No project</option>
+            <option>Akido</option>
+            <option>Peakmojo</option>
+            <option>Gild</option>
+            <option>AskSAMIE</option>
+            <option>Admin</option>
+            <option>Personal</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Assign to</label>
+          <select>
+            <option value="">Just me</option>
+            <option>Peijun</option>
+            <option>Tian</option>
+            <option>Jared</option>
+            <option>Bary</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Dependencies <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-32)">— optional</span></label>
+        <input type="text" placeholder="What needs to happen before this can start?" />
+        <span class="field-hint">Runner will watch for blockers and alert you if a dependency slips.</span>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn ghost sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">Cancel</button>
+      <button class="btn primary sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>
+        Add Task
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
   function toggleTask(row) {
