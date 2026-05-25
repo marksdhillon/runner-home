@@ -444,6 +444,48 @@
   .meeting-join:hover { color: var(--ink); border-color: var(--ink-22); }
 
   /* meeting brief popup */
+  /* ── Runner Session Modal ── */
+  .session-overlay {
+    display: none; position: fixed; inset: 0; z-index: 400;
+    background: rgba(24,24,26,.5); backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  .session-overlay.open { display: flex; }
+  .session-modal {
+    background: #18181a; border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px; box-shadow: 0 24px 64px rgba(0,0,0,.5);
+    width: 560px; max-width: calc(100vw - 48px);
+    max-height: 80vh; display: flex; flex-direction: column;
+    animation: rise .2s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  .session-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+  .session-header-left { display: flex; align-items: center; gap: 8px; }
+  .session-orb { width: 20px; height: 20px; border-radius: 5px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .session-title { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.45); letter-spacing: -0.01em; }
+  .session-close { width: 24px; height: 24px; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,.3); transition: all .1s; border: none; background: none; }
+  .session-close:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
+  .session-close svg { width: 13px; height: 13px; }
+  .session-body { padding: 20px 18px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; min-height: 200px; }
+  .session-msg { display: flex; flex-direction: column; gap: 4px; }
+  .session-msg.user { align-items: flex-end; }
+  .session-bubble { max-width: 85%; padding: 10px 13px; border-radius: 10px; font-size: 13px; line-height: 1.58; letter-spacing: -0.005em; }
+  .session-msg.user .session-bubble { background: rgba(255,255,255,.1); color: rgba(255,255,255,.9); border-radius: 10px 10px 3px 10px; }
+  .session-msg.runner .session-bubble { background: transparent; color: rgba(255,255,255,.72); padding: 0; }
+  .session-sender { font-size: 10.5px; font-weight: 500; letter-spacing: .02em; text-transform: uppercase; color: rgba(255,255,255,.22); padding: 0 2px; }
+  .session-typing { display: flex; align-items: center; gap: 4px; padding: 4px 0; }
+  .session-typing span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.3); animation: typingDot 1.2s ease-in-out infinite; }
+  .session-typing span:nth-child(2) { animation-delay: .2s; }
+  .session-typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes typingDot { 0%,60%,100%{transform:scale(1);opacity:.3} 30%{transform:scale(1.35);opacity:1} }
+  .session-footer { padding: 12px 18px 14px; border-top: 1px solid rgba(255,255,255,.07); }
+  .session-input-wrap { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 9px 12px; display: flex; align-items: center; }
+  .session-input { flex: 1; background: transparent; border: none; outline: none; font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.7); letter-spacing: -0.005em; }
+  .session-input::placeholder { color: rgba(255,255,255,.2); }
+
   .brief-overlay {
     display: none; position: fixed; inset: 0; z-index: 300;
     background: rgba(24,24,26,.18); backdrop-filter: blur(2px);
@@ -1223,6 +1265,27 @@
   </div>
 </div>
 
+<!-- Runner Session Modal -->
+<div class="session-overlay" id="sessionModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="session-modal">
+    <div class="session-header">
+      <div class="session-header-left">
+        <span class="session-orb">🏃</span>
+        <span class="session-title" id="sessionTitle">New session</span>
+      </div>
+      <button class="session-close" onclick="document.getElementById('sessionModal').classList.remove('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="session-body" id="sessionBody"></div>
+    <div class="session-footer">
+      <div class="session-input-wrap">
+        <input class="session-input" placeholder="Reply to Runner…" />
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   function sendMsg(btn) {
     const row = btn.closest('.msg-row');
@@ -1233,15 +1296,64 @@
     row.classList.toggle('done');
   }
 
-  // Hand a task brief to Runner — closes drawer, opens a new session
+  // Hand a task brief to Runner — closes drawer, opens a session modal
   function handToRunner() {
     const title = (document.getElementById('taskTitle').value || '').trim();
     const brief = (document.getElementById('taskBrief').value || '').trim();
+    const pri = (document.querySelector('input[name="priority"]:checked') || {}).value || 'high';
+    const prompt = [title, brief].filter(Boolean).join(' — ') || 'Handle this task for me';
+
     document.getElementById('addTaskModal').classList.remove('open');
-    // In production this would open a real Runner session
+
+    const body = document.getElementById('sessionBody');
+    const titleEl = document.getElementById('sessionTitle');
+    titleEl.textContent = title || 'New session';
+    body.innerHTML = '';
+
+    // User message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'session-msg user';
+    userMsg.innerHTML = '<div class="session-bubble">' + prompt + '</div>';
+    body.appendChild(userMsg);
+
+    // Typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'session-msg runner';
+    typing.innerHTML = '<span class="session-sender">Runner</span><div class="session-typing"><span></span><span></span><span></span></div>';
+    body.appendChild(typing);
+
+    document.getElementById('sessionModal').classList.add('open');
+
+    // Simulate response
+    const responses = [
+      "On it. I've pulled the relevant context from your Gmail threads and calendar. Here's what I'm doing:\n\n1. Drafting the update now based on your last exchange\n2. Checking your schedule for any conflicts around the due date\n3. Flagging any dependencies I spotted\n\nI'll have a draft ready for your review in a moment — want me to send it straight away or let you check it first?",
+      "Got it. Pulling context from your connected apps now.\n\nI found 3 relevant email threads, a calendar block that might conflict, and a Slack message from this morning that looks related. Working through it — I'll surface a draft and any blockers in a few seconds.",
+      "Running now. I've scanned your inbox, calendar, and recent files. Looks like this connects to the thread from earlier today.\n\nDrafting a response and flagging one dependency for your attention. Back to you in a moment."
+    ];
+    const reply = responses[Math.floor(Math.random() * responses.length)];
+
     setTimeout(function() {
-      alert('Runner is on it' + (title ? ': ' + title : '') + (brief ? '\n\n' + brief : ''));
-    }, 200);
+      typing.remove();
+      const runnerMsg = document.createElement('div');
+      runnerMsg.className = 'session-msg runner';
+      runnerMsg.innerHTML = '<span class="session-sender">Runner</span><div class="session-bubble"></div>';
+      body.appendChild(runnerMsg);
+      const bubble = runnerMsg.querySelector('.session-bubble');
+
+      // Typewriter effect
+      let i = 0;
+      const lines = reply.split('\n');
+      function typeChar() {
+        const flat = reply;
+        if (i < flat.length) {
+          bubble.innerHTML = flat.substring(0, i + 1).replace(/\n/g, '<br>');
+          i++;
+          body.scrollTop = body.scrollHeight;
+          setTimeout(typeChar, i < 60 ? 18 : 8);
+        }
+      }
+      typeChar();
+    }, 1400);
   }
 
   // Close quick-actions dropdown on outside click
