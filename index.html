@@ -400,7 +400,8 @@
   .msg-line:hover, .msg-row.open .msg-line { background: var(--ink-035); }
 
   /* eye icon */
-  .msg-eye { position: relative; display: flex; align-items: center; flex-shrink: 0; margin-right: 2px; }
+  .msg-eye { display: flex; align-items: center; flex-shrink: 0; margin-right: 2px; }
+  .msg-eye .msg-preview { display: none !important; }
   .msg-eye-btn { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: var(--ink-22); cursor: pointer; transition: color .1s, background .1s; }
   .msg-eye-btn:hover { color: var(--ink-60); background: var(--ink-055); }
   .msg-eye-btn svg { width: 13px; height: 13px; }
