@@ -296,66 +296,70 @@
   /* ── Add Task Drawer ── */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 300;
-    background: rgba(24,24,26,.12);
   }
   .modal-overlay.open { display: block; }
   .modal {
-    position: fixed; top: 0; right: 0; bottom: 0; width: 360px;
-    background: var(--surface); border-left: 1px solid var(--hairline-soft);
-    box-shadow: -12px 0 40px rgba(24,24,26,.10);
+    position: fixed; top: 0; right: 0; bottom: 0; width: 340px;
+    background: #fff; border-left: 1px solid rgba(24,24,26,.08);
+    box-shadow: -2px 0 20px rgba(24,24,26,.08);
     display: flex; flex-direction: column;
-    transform: translateX(100%); transition: transform .26s cubic-bezier(.22,1,.36,1);
+    transform: translateX(100%); transition: transform .22s cubic-bezier(.22,1,.36,1);
   }
   .modal-overlay.open .modal { transform: translateX(0); }
 
   .modal-header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 22px 16px; flex-shrink: 0;
+    padding: 24px 24px 0;
   }
-  .modal-title { font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.025em; }
-  .modal-close { width: 28px; height: 28px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-28); transition: all .12s; border: none; background: none; }
-  .modal-close:hover { background: var(--ink-055); color: var(--ink-60); }
+  .modal-title { font-size: 13px; font-weight: 500; color: rgba(24,24,26,.4); letter-spacing: -0.01em; }
+  .modal-close { width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(24,24,26,.3); transition: all .1s; border: none; background: none; }
+  .modal-close:hover { background: rgba(24,24,26,.06); color: rgba(24,24,26,.6); }
   .modal-close svg { width: 13px; height: 13px; }
 
-  .modal-body { padding: 4px 22px 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; flex: 1; }
-  .modal-footer { padding: 14px 22px 20px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+  .modal-body { padding: 8px 0 0; display: flex; flex-direction: column; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 16px 24px 24px; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
 
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .field label {
-    font-size: 11.5px; font-weight: 550; color: var(--ink-60);
-    letter-spacing: -0.003em;
+  .notion-field {
+    display: flex; flex-direction: column;
+    padding: 6px 24px; transition: background .1s;
   }
-  .field input, .field select, .field textarea {
+  .notion-field:hover { background: rgba(24,24,26,.03); }
+  .notion-field-label {
+    font-size: 11px; color: rgba(24,24,26,.4); font-weight: 500;
+    letter-spacing: -0.005em; margin-bottom: 2px;
+  }
+  .notion-field input, .notion-field textarea {
     font-family: var(--ui); font-size: 13px; color: var(--ink);
-    background: var(--canvas); border: 1px solid var(--hairline);
-    border-radius: var(--r-sm); padding: 9px 11px;
-    transition: border-color .12s, box-shadow .12s;
-    outline: none; width: 100%; letter-spacing: -0.004em;
+    background: transparent; border: none; outline: none; width: 100%;
+    letter-spacing: -0.006em; line-height: 1.5; padding: 0;
+    resize: none;
   }
-  .field input:focus, .field select:focus, .field textarea:focus {
-    border-color: var(--ink-32); box-shadow: 0 0 0 3px var(--ink-055);
+  .notion-field input::placeholder, .notion-field textarea::placeholder { color: rgba(24,24,26,.2); }
+
+  .notion-task-input {
+    padding: 20px 24px 12px; border-bottom: 1px solid rgba(24,24,26,.06);
+    margin-bottom: 4px;
   }
-  .field textarea { resize: none; line-height: 1.6; }
-  .field input::placeholder, .field textarea::placeholder { color: var(--ink-22); }
-  .field-hint { font-size: 11px; color: var(--ink-32); line-height: 1.5; letter-spacing: -0.003em; }
-
-  .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 9px center; background-size: 13px; padding-right: 28px; }
-
-  .drawer-divider { height: 1px; background: var(--hairline-soft); margin: 0 -22px; }
-
-  .priority-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-  .priority-opt { display: none; }
-  .priority-label {
-    display: flex; flex-direction: column; align-items: center; gap: 5px;
-    padding: 9px 4px; border-radius: var(--r-sm); border: 1px solid var(--hairline);
-    cursor: pointer; transition: all .12s; text-align: center;
-    font-size: 11px; color: var(--ink-50); font-weight: 500; letter-spacing: -0.002em;
-    background: var(--canvas);
+  .notion-task-input input {
+    font-family: var(--ui); font-size: 18px; font-weight: 500;
+    color: var(--ink); background: transparent; border: none; outline: none;
+    width: 100%; letter-spacing: -0.02em; line-height: 1.4;
   }
-  .priority-label:hover { border-color: var(--ink-22); color: var(--ink-72); }
-  .priority-opt:checked + .priority-label { border-color: var(--ink); background: var(--ink); color: #fff; }
-  .priority-emoji { font-size: 14px; line-height: 1; }
+  .notion-task-input input::placeholder { color: rgba(24,24,26,.18); }
+
+  .notion-priority { display: flex; gap: 5px; flex-wrap: wrap; padding-top: 2px; }
+  .p-opt { display: none; }
+  .p-lbl {
+    font-size: 11.5px; font-weight: 500; color: rgba(24,24,26,.5);
+    padding: 3px 9px; border-radius: 4px; border: 1px solid rgba(24,24,26,.1);
+    cursor: pointer; transition: all .1s; background: transparent;
+    letter-spacing: -0.004em;
+  }
+  .p-lbl:hover { background: rgba(24,24,26,.05); color: rgba(24,24,26,.7); }
+  .p-opt:checked + .p-lbl { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+  .notion-hint { font-size: 11px; color: rgba(24,24,26,.3); margin-top: 4px; line-height: 1.5; letter-spacing: -0.003em; }
+
 
 
   /* ── Grid ── */
@@ -1084,68 +1088,63 @@
 <!-- Add Task Modal -->
 <div class="modal-overlay" id="addTaskModal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal">
+
     <div class="modal-header">
       <span class="modal-title">New task</span>
       <button class="modal-close" onclick="document.getElementById('addTaskModal').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="modal-body">
 
-      <div class="field">
-        <label>What needs to get done?</label>
-        <input type="text" placeholder="e.g. Send revised deck to Tom" />
+      <div class="notion-task-input">
+        <input type="text" placeholder="Task name" />
       </div>
 
-      <div class="drawer-divider"></div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>Due date</label>
-          <input type="date" />
-        </div>
-        <div class="field">
-          <label>Estimated hours to complete</label>
-          <input type="number" placeholder="e.g. 2.5" min="0" step="0.5" />
-        </div>
+      <div class="notion-field">
+        <div class="notion-field-label">Due date</div>
+        <input type="date" />
       </div>
 
-      <div class="drawer-divider"></div>
+      <div class="notion-field">
+        <div class="notion-field-label">Estimated hours to complete</div>
+        <input type="number" placeholder="e.g. 2.5" min="0" step="0.5" />
+      </div>
 
-      <div class="field">
-        <label>Priority</label>
-        <div class="priority-row">
-          <span><input class="priority-opt" type="radio" name="priority" id="p-low" value="low"><label class="priority-label" for="p-low"><span class="priority-emoji">🟢</span>Low</label></span>
-          <span><input class="priority-opt" type="radio" name="priority" id="p-med" value="medium"><label class="priority-label" for="p-med"><span class="priority-emoji">🟡</span>Medium</label></span>
-          <span><input class="priority-opt" type="radio" name="priority" id="p-high" value="high" checked><label class="priority-label" for="p-high"><span class="priority-emoji">🔴</span>High</label></span>
-          <span><input class="priority-opt" type="radio" name="priority" id="p-block" value="blocking"><label class="priority-label" for="p-block"><span class="priority-emoji">🚨</span>Blocking</label></span>
+      <div class="notion-field">
+        <div class="notion-field-label">Priority</div>
+        <div class="notion-priority">
+          <input class="p-opt" type="radio" name="priority" id="p-low" value="low">
+          <label class="p-lbl" for="p-low">Low</label>
+          <input class="p-opt" type="radio" name="priority" id="p-med" value="medium">
+          <label class="p-lbl" for="p-med">Medium</label>
+          <input class="p-opt" type="radio" name="priority" id="p-high" value="high" checked>
+          <label class="p-lbl" for="p-high">High</label>
+          <input class="p-opt" type="radio" name="priority" id="p-block" value="blocking">
+          <label class="p-lbl" for="p-block">Blocking</label>
         </div>
       </div>
 
-      <div class="drawer-divider"></div>
-
-      <div class="field">
-        <label>Why does this matter?</label>
-        <textarea rows="3" placeholder="e.g. Unblocks the Akido sprint review — Tom is waiting and it's two days late…"></textarea>
-        <span class="field-hint">Runner uses this to understand urgency, draft follow-ups, and catch if something depends on it.</span>
+      <div class="notion-field">
+        <div class="notion-field-label">Why does this matter?</div>
+        <textarea rows="3" placeholder="Give Runner context so it can prioritize, follow up, and catch dependencies…"></textarea>
+        <div class="notion-hint">Runner learns from this to act on your behalf over time.</div>
       </div>
 
-      <div class="field">
-        <label>Anything blocking this?</label>
+      <div class="notion-field">
+        <div class="notion-field-label">Anything blocking this?</div>
         <input type="text" placeholder="e.g. Waiting on Tian's Figma assets" />
-        <span class="field-hint">Runner will flag you if a blocker slips.</span>
+        <div class="notion-hint">Runner will flag you if the blocker slips.</div>
       </div>
 
     </div>
 
     <div class="modal-footer">
       <button class="btn ghost sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">Cancel</button>
-      <button class="btn primary sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>
-        Add task
-      </button>
+      <button class="btn primary sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">Add task</button>
     </div>
+
   </div>
 </div>
 
