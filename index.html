@@ -650,19 +650,8 @@
       </div>
 
       <!-- COMMAND BAR -->
-      <div class="askbar-wrap rise d2">
-        <div class="askbar" id="askbar" onclick="document.getElementById('askInput').focus()">
-          <span class="askbar-orb">🏃</span>
-          <input id="askInput" type="text" autocomplete="off" spellcheck="false" placeholder="Ask Runner to handle something…" />
-          <span class="askbar-kbd">⌘K</span>
-          <div class="askbar-send" onclick="runnerSubmit(event)" title="Send">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
-          </div>
-        </div>
-      </div>
-
       <!-- THE RECOMMENDATION -->
-      <div class="rec rise d3" id="rec">
+      <div class="rec rise d2" id="rec">
         <div class="rec-inline">
           <span class="rec-dot"></span>
           <span class="rec-label" style="font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-50);flex-shrink:0;">Do this first</span>
@@ -671,6 +660,17 @@
           <button class="btn accent sm" style="margin-left:6px;">Finish now</button>
           <button class="btn sm">Send Tom update</button>
           <button class="btn ghost sm" onclick="document.getElementById('rec').style.display='none'">Dismiss</button>
+        </div>
+      </div>
+
+      <div class="askbar-wrap rise d3">
+        <div class="askbar" id="askbar" onclick="document.getElementById('askInput').focus()">
+          <span class="askbar-orb">🏃</span>
+          <input id="askInput" type="text" autocomplete="off" spellcheck="false" placeholder="Ask Runner to handle something…" />
+          <span class="askbar-kbd">⌘K</span>
+          <div class="askbar-send" onclick="runnerSubmit(event)" title="Send">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+          </div>
         </div>
       </div>
 
