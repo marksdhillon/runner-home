@@ -293,34 +293,34 @@
   .btn.ghost:hover { background: var(--ink-055); color: var(--ink-90); transform: none; }
   .btn.sm { font-size: 12px; padding: 5px 10px; }
 
-  /* ── Add Task Modal ── */
+  /* ── Add Task Drawer ── */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 300;
-    background: rgba(24,24,26,.32); backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    align-items: center; justify-content: center;
+    background: rgba(24,24,26,.18);
   }
-  .modal-overlay.open { display: flex; }
+  .modal-overlay.open { display: block; }
   .modal {
-    background: var(--surface); border: 1px solid var(--hairline);
-    border-radius: var(--r-lg); box-shadow: var(--elev-pop);
-    width: 520px; max-width: calc(100vw - 48px);
-    animation: rise .2s cubic-bezier(.22,1,.36,1) forwards;
+    position: fixed; top: 0; right: 0; bottom: 0; width: 380px;
+    background: var(--surface); border-left: 1px solid var(--hairline);
+    box-shadow: -8px 0 32px rgba(24,24,26,.12);
+    display: flex; flex-direction: column;
+    transform: translateX(100%); transition: transform .24s cubic-bezier(.22,1,.36,1);
   }
+  .modal-overlay.open .modal { transform: translateX(0); }
   .modal-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 16px 20px 14px; border-bottom: 1px solid var(--hairline-soft);
+    flex-shrink: 0;
   }
   .modal-title { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
   .modal-close { width: 26px; height: 26px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-32); transition: all .12s; border: none; background: none; }
   .modal-close:hover { background: var(--ink-055); color: var(--ink-72); }
   .modal-close svg { width: 14px; height: 14px; }
-  .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
-  .modal-footer { padding: 12px 20px 16px; border-top: 1px solid var(--hairline-soft); display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+  .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 12px 20px 16px; border-top: 1px solid var(--hairline-soft); display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
 
   .field { display: flex; flex-direction: column; gap: 5px; }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
   .field label { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-50); }
   .field input, .field select, .field textarea {
     font-family: var(--ui); font-size: 13px; color: var(--ink);
@@ -1114,31 +1114,6 @@
         <label>Why it matters <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-32)">— help Runner understand context</span></label>
         <textarea rows="2" placeholder="e.g. This unblocks the Akido sprint review and Tom is waiting on it…"></textarea>
         <span class="field-hint">Runner uses this to prioritize, draft follow-ups, and flag if something else depends on it.</span>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>Project / Area</label>
-          <select>
-            <option value="">No project</option>
-            <option>Akido</option>
-            <option>Peakmojo</option>
-            <option>Gild</option>
-            <option>AskSAMIE</option>
-            <option>Admin</option>
-            <option>Personal</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Assign to</label>
-          <select>
-            <option value="">Just me</option>
-            <option>Peijun</option>
-            <option>Tian</option>
-            <option>Jared</option>
-            <option>Bary</option>
-          </select>
-        </div>
       </div>
 
       <div class="field">
