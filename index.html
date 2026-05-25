@@ -85,12 +85,14 @@
   /* ════════════════════ TITLEBAR ════════════════════ */
   .titlebar {
     height: var(--titlebar-h); display: flex; align-items: center;
-    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    position: fixed; top: 0; left: var(--sidebar-w); right: 0; z-index: 50;
     background: rgba(251,250,247,.82);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     border-bottom: 1px solid var(--hairline-soft);
+    transition: left .22s cubic-bezier(.22,1,.36,1);
   }
+  body.sidebar-collapsed .titlebar { left: 0; }
   .traffic-lights { display: flex; align-items: center; gap: 8px; padding: 0 16px; width: var(--sidebar-w); flex-shrink: 0; }
   .tl { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 .5px rgba(0,0,0,.14); }
   .tl-r { background: #ff5f57; } .tl-y { background: #febc2e; } .tl-g { background: #28c840; }
@@ -102,6 +104,10 @@
   .title-center .live { width: 6px; height: 6px; border-radius: 50%; background: var(--good); position: relative; }
   .title-center .live { background: var(--ink-42); }
   @keyframes ping { 0%{transform:scale(.8);opacity:.4;} 70%,100%{transform:scale(2.2);opacity:0;} }
+
+  .titlebar-left { display: flex; align-items: center; padding-left: 10px; }
+  .sidebar-expand { display: none; }
+  body.sidebar-collapsed .sidebar-expand { display: flex; }
 
   .titlebar-right { margin-left: auto; display: flex; align-items: center; gap: 4px; padding-right: 14px; }
   .kbd {
@@ -123,8 +129,11 @@
   .sidebar {
     width: var(--sidebar-w); flex-shrink: 0; display: flex; flex-direction: column;
     background: transparent; border-right: 1px solid var(--hairline-soft);
-    position: fixed; top: var(--titlebar-h); left: 0; bottom: 0; overflow-y: auto;
+    position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto;
   }
+  .sidebar-brand { display: flex; align-items: center; gap: 9px; padding: 14px 12px 10px; border-bottom: 1px solid var(--hairline-soft); }
+  .sidebar-brand-name { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+
   .sidebar-top { display: flex; align-items: center; padding: 10px 8px 6px; gap: 4px; }
   .new-session {
     flex: 1; min-width: 0; display: flex; align-items: center; gap: 7px;
@@ -204,7 +213,6 @@
   body.sidebar-collapsed .main { margin-left: 0; }
   body.sidebar-collapsed .traffic-lights { width: 60px; }
   .tb-btn.active { background: var(--ink-08); color: var(--ink-72); }
-
   /* ── Hero ── */
   .hero { margin-bottom: 22px; }
   .greeting { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; color: var(--ink); }
@@ -454,12 +462,14 @@
 <!-- ════════════════ TITLEBAR ════════════════ -->
 <div class="titlebar">
 
-  <div class="traffic-lights">
-    <div class="tb-btn" id="sidebarToggle" title="Toggle Sidebar" onclick="document.body.classList.toggle('sidebar-collapsed');this.classList.toggle('active')">
+
+
+  <div class="title-center"><span class="live"></span> Sunday, May 24</div>
+  <div class="titlebar-left">
+    <div class="tb-btn sidebar-expand" id="sidebarExpand" title="Expand Sidebar" onclick="document.body.classList.remove('sidebar-collapsed');document.getElementById('sidebarToggle').classList.remove('active')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
     </div>
   </div>
-  <div class="title-center"><span class="live"></span> Sunday, May 24</div>
   <div class="titlebar-right">
     <div class="kbd" id="cmdK"><span>⌘</span>K</div>
     <div class="qa-wrap" id="qaWrap">
@@ -484,6 +494,10 @@
 
   <!-- ════════════════ SIDEBAR ════════════════ -->
   <div class="sidebar">
+    <div class="sidebar-brand">
+      <span class="askbar-orb">🏃</span>
+      <span class="sidebar-brand-name">Runner</span>
+    </div>
     <div class="sidebar-top">
       <div class="new-session">
         <span class="ns-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></span>
@@ -560,6 +574,11 @@
         <div class="ws-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8.7 5v10L12 22l-8.7-5V7z"/></svg></div>
         <span class="ws-label">My Workspace</span>
         <span class="ws-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="bottom-item" id="sidebarToggle" onclick="document.body.classList.toggle('sidebar-collapsed');this.classList.toggle('active')" title="Collapse sidebar">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg></span>
+        <span class="bi-label">Collapse</span>
       </div>
     </div>
   </div>
