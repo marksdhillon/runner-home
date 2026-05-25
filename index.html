@@ -393,11 +393,23 @@
   .inbox-scroll::-webkit-scrollbar { width: 5px; }
   .inbox-scroll::-webkit-scrollbar-thumb { background: var(--ink-12); border-radius: 99px; }
   .inbox-scroll::-webkit-scrollbar-thumb:hover { background: var(--ink-22); }
-  .msg-row { border-bottom: 1px solid var(--hairline-soft); transition: opacity .3s ease, transform .3s ease, max-height .35s ease; overflow: hidden; max-height: 400px; }
+  .msg-row { border-bottom: 1px solid var(--hairline-soft); transition: opacity .3s ease, transform .3s ease, max-height .35s ease; overflow: hidden; max-height: 400px; position: relative; }
   .msg-row.sending { opacity: 0; transform: translateX(12px); max-height: 0; pointer-events: none; }
   .msg-row:last-child { border-bottom: none; }
   .msg-line { display: flex; align-items: center; gap: 12px; padding: 10px 18px; cursor: pointer; transition: background .1s ease; }
   .msg-line:hover, .msg-row.open .msg-line { background: var(--ink-035); }
+
+  /* original message tooltip on hover */
+  .msg-preview {
+    display: none; position: absolute; left: 100%; top: 0; margin-left: 10px;
+    width: 260px; background: var(--ink); color: rgba(255,255,255,.85);
+    border-radius: var(--r-md); padding: 12px 14px; z-index: 100;
+    box-shadow: 0 8px 24px rgba(24,24,26,.22);
+    pointer-events: none;
+  }
+  .msg-preview-sender { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.45); letter-spacing: -0.004em; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; font-family: var(--mono); }
+  .msg-preview-body { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,.8); letter-spacing: -0.005em; }
+  .msg-row:not(.open):hover .msg-preview { display: block; }
   .msg-ch { display: flex; flex-shrink: 0; }
   .msg-ch svg { width: 14px; height: 14px; }
   .msg-sender { font-size: 13px; font-weight: 550; color: var(--ink-90); flex-shrink: 0; letter-spacing: -0.008em; }
@@ -780,6 +792,7 @@
               <span class="msg-time">22m</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Tyler Lasicki</div><div class="msg-preview-body">Hey Mark — we just closed the Lattice pilot and hit 1.2k MAU. Would love an intro to Samira if you think the timing's right. Let me know!</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block">
                 <div class="draft-label"><span class="orb"></span> Runner draft</div>
@@ -799,6 +812,7 @@
               <span class="msg-time">1h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Charlie Feng</div><div class="msg-preview-body">Yo, you down for dinner tomorrow somewhere on Abbot Kinney? Pam's in too. Let me know what works</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Dude, yes — looped Pam in. Let's do 7pm at Felix? I'll book it.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -813,6 +827,7 @@
               <span class="msg-time">4h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Shoshana</div><div class="msg-preview-body">Hey — just a heads up, the Q2 OKR review got moved to Tuesday at 9am. Also Jared still hasn't sent the deck, might want to nudge him</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Thanks for flagging — I'll ping Jared this evening so the deck lands Monday. Appreciate you keeping eyes on it.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -827,6 +842,7 @@
               <span class="msg-time">5h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Samira Khoury</div><div class="msg-preview-body">Hey! Prepping for our Tuesday sync — anything specific you want to make sure we cover? Happy to adjust the agenda</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Yes — would love to walk through the consumer thesis and get your read on Gild. I'll send over a one-pager tonight.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -841,6 +857,7 @@
               <span class="msg-time">6h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Kent</div><div class="msg-preview-body">Hey are we still on for 9am tomorrow? Heads up parking at Erewhon is brutal, might want to leave early</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Still on — I'll grab street parking on Beverly. See you at 9.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -855,6 +872,7 @@
               <span class="msg-time">8h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Maggi Shen</div><div class="msg-preview-body">Weekly Sumly update — retention is up 8% which is great. But churn ticked up slightly in the D7 cohort, want to dig into that together?</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Great numbers on retention — the 8% lift is real signal. On churn: let's dig into the D30 cohort on Monday, I have a hypothesis on the onboarding drop-off.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -869,6 +887,7 @@
               <span class="msg-time">9h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Jared Kim</div><div class="msg-preview-body">Attached the OKR deck v2 — made the changes we talked about. Let me know if you have notes before EOD, need to lock it tonight</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">On it — will review tonight and get you notes before I sleep. Deck looks cleaner already from the preview.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -883,6 +902,7 @@
               <span class="msg-time">11h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Willie Reyes</div><div class="msg-preview-body">Sending over the AskSAMIE calendar invite for Wed 2pm PT — Dr. Brandy will be on too. Can you confirm you're good for that slot?</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Confirmed — Wed 2pm works great. Looking forward to the deep dive with you and Dr. Brandy.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -897,6 +917,7 @@
               <span class="msg-time">12h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Pam Ortega</div><div class="msg-preview-body">Felix at 7pm works perfectly! So excited, I've literally been craving their carbonara for weeks. See you both there 🍝</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Booked! Table for 3 at 7. See you and Charlie there.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -911,6 +932,7 @@
               <span class="msg-time">13h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Logan Trowbridge</div><div class="msg-preview-body">Here's the Zoom link for our 11:30 tomorrow. Also sending over a few docs to review beforehand — mainly the K-1 and the trust amendment. LMK if questions</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Got the link, thanks Logan. I'll review the docs tonight and come with questions on the K-1 timing.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -925,6 +947,7 @@
               <span class="msg-time">14h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Peijun</div><div class="msg-preview-body">Hey, we've got a blocker on the embeddings job — the backfill is taking way longer than expected and it's going to hold up the sprint review. Can we grab a quick call?</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Let's grab 15 min before the sprint review at 2. I think we can parallelize the backfill — will sketch it out.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -939,6 +962,7 @@
               <span class="msg-time">16h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Dr. Brandy Cole</div><div class="msg-preview-body">Drafted an agenda for Wednesday's AskSAMIE deep dive. Wanted to get your eyes on it before I send to the group — let me know if you want to add or move anything</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Agenda looks great. I'd add 10 min on the clinical validation data — that's what the partners will want to see.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -953,6 +977,7 @@
               <span class="msg-time">18h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Tian Wu</div><div class="msg-preview-body">Just pushed the updated design assets to Figma — all the new components are in the shared frame. Should be everything Tom needs for the handoff</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Perfect timing — these are exactly what I need to send Tom. Reviewing now and packaging them up.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -967,6 +992,7 @@
               <span class="msg-time">20h</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Bary Ng</div><div class="msg-preview-body">Quick q — are we actually demoing the new flow on Tuesday or are we pushing it? Want to make sure staging is ready if so</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Yes — let's demo the new flow at the sprint review. Can you have the staging build ready by 1?</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
@@ -981,6 +1007,7 @@
               <span class="msg-time">1d</span>
               <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="msg-preview"><div class="msg-preview-sender">Kay Lin</div><div class="msg-preview-body">Moved our 1:1 to 9:30 Tuesday instead of 9. Also added a couple things to the agenda — headcount and the Q3 roadmap prioritization</div></div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">9:30 works. I'll add the headcount plan to the agenda — want to align on Q3 hiring before the board update.</div></div>
               <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
