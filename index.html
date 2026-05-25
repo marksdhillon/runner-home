@@ -399,23 +399,23 @@
   .msg-line { display: flex; align-items: center; gap: 12px; padding: 10px 18px; cursor: pointer; transition: background .1s ease; }
   .msg-line:hover, .msg-row.open .msg-line { background: var(--ink-035); }
 
-  /* eye icon + message preview tooltip */
+  /* eye icon */
   .msg-eye { position: relative; display: flex; align-items: center; flex-shrink: 0; margin-right: 2px; }
   .msg-eye-btn { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: var(--ink-22); cursor: pointer; transition: color .1s, background .1s; }
   .msg-eye-btn:hover { color: var(--ink-60); background: var(--ink-055); }
   .msg-eye-btn svg { width: 13px; height: 13px; }
-  .msg-preview {
-    display: none; position: absolute; bottom: calc(100% + 8px); right: 0;
+
+  /* global floating tooltip */
+  #msgTooltip {
+    display: none; position: fixed; z-index: 9999;
     width: 280px; background: #18181a; color: rgba(255,255,255,.85);
-    border-radius: var(--r-md); padding: 12px 14px; z-index: 500;
-    box-shadow: 0 8px 24px rgba(24,24,26,.28); pointer-events: none;
-    animation: rise .12s ease forwards;
+    border-radius: var(--r-md); padding: 12px 14px;
+    box-shadow: 0 8px 28px rgba(24,24,26,.32); pointer-events: none;
   }
-  .msg-preview::after { content: ''; position: absolute; bottom: -5px; right: 8px; width: 10px; height: 10px; background: #18181a; transform: rotate(45deg); border-radius: 2px; }
-  .msg-preview-sender { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.38); letter-spacing: .05em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 5px; }
-  .msg-preview-body { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,.78); letter-spacing: -0.005em; }
-  .msg-eye:hover .msg-preview { display: block; }
-  .msg-row:not(.open):hover .msg-preview { display: block; }
+  #msgTooltip.visible { display: block; animation: rise .12s ease forwards; }
+  #msgTooltip::after { content: ''; position: absolute; bottom: -5px; right: 14px; width: 10px; height: 10px; background: #18181a; transform: rotate(45deg); border-radius: 2px; }
+  #msgTooltip .msg-preview-sender { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.38); letter-spacing: .05em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 5px; }
+  #msgTooltip .msg-preview-body { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,.78); letter-spacing: -0.005em; }
   .msg-ch { display: flex; flex-shrink: 0; }
   .msg-ch svg { width: 14px; height: 14px; }
   .msg-sender { font-size: 13px; font-weight: 550; color: var(--ink-90); flex-shrink: 0; letter-spacing: -0.008em; }
@@ -1298,7 +1298,38 @@
   </div>
 </div>
 
-<!-- Runner Session Modal -->
+<!-- Global message preview tooltip -->
+<div id="msgTooltip">
+  <div class="msg-preview-sender" id="tooltipSender"></div>
+  <div class="msg-preview-body" id="tooltipBody"></div>
+</div>
+
+<script>
+  // Global message preview tooltip
+  const tooltip = document.getElementById('msgTooltip');
+  document.querySelectorAll('.msg-eye-btn').forEach(function(btn) {
+    const eye = btn.closest('.msg-eye');
+    const sender = eye.querySelector('.msg-preview-sender') ? eye.querySelector('.msg-preview-sender').textContent : '';
+    const body = eye.querySelector('.msg-preview-body') ? eye.querySelector('.msg-preview-body').textContent : '';
+    btn.addEventListener('mouseenter', function() {
+      document.getElementById('tooltipSender').textContent = sender;
+      document.getElementById('tooltipBody').textContent = body;
+      const rect = btn.getBoundingClientRect();
+      tooltip.classList.add('visible');
+      const ttW = 280, ttH = tooltip.offsetHeight || 100;
+      let left = rect.right - ttW;
+      let top = rect.top - ttH - 10;
+      if (left < 8) left = 8;
+      if (top < 8) top = rect.bottom + 10;
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+    });
+    btn.addEventListener('mouseleave', function() {
+      tooltip.classList.remove('visible');
+    });
+  });
+</script>
+
 <div class="session-overlay" id="sessionModal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="session-modal">
     <div class="session-header">
