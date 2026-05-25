@@ -426,7 +426,8 @@
   .inbox-scroll::-webkit-scrollbar { width: 5px; }
   .inbox-scroll::-webkit-scrollbar-thumb { background: var(--ink-12); border-radius: 99px; }
   .inbox-scroll::-webkit-scrollbar-thumb:hover { background: var(--ink-22); }
-  .msg-row { border-bottom: 1px solid var(--hairline-soft); }
+  .msg-row { border-bottom: 1px solid var(--hairline-soft); transition: opacity .3s ease, transform .3s ease, max-height .35s ease; overflow: hidden; max-height: 400px; }
+  .msg-row.sending { opacity: 0; transform: translateX(12px); max-height: 0; pointer-events: none; }
   .msg-row:last-child { border-bottom: none; }
   .msg-line { display: flex; align-items: center; gap: 12px; padding: 10px 18px; cursor: pointer; transition: background .1s ease; }
   .msg-line:hover, .msg-row.open .msg-line { background: var(--ink-035); }
@@ -775,7 +776,7 @@
                 <div class="draft-text">Hey Tyler — huge congrats on the Lattice pilot and 1.2k MAU, real momentum. Happy to intro you to Samira; she's been asking about consumer plays. Want me to send a forwardable blurb?</div>
               </div>
               <div class="msg-actions">
-                <button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button>
+                <button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button>
               </div>
             </div></div></div>
           </div>
@@ -790,7 +791,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Dude, yes — looped Pam in. Let's do 7pm at Felix? I'll book it.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -804,7 +805,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Thanks for flagging — I'll ping Jared this evening so the deck lands Monday. Appreciate you keeping eyes on it.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -818,7 +819,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Yes — would love to walk through the consumer thesis and get your read on Gild. I'll send over a one-pager tonight.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -832,7 +833,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Still on — I'll grab street parking on Beverly. See you at 9.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -846,7 +847,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Great numbers on retention — the 8% lift is real signal. On churn: let's dig into the D30 cohort on Monday, I have a hypothesis on the onboarding drop-off.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -860,7 +861,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">On it — will review tonight and get you notes before I sleep. Deck looks cleaner already from the preview.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -874,7 +875,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Confirmed — Wed 2pm works great. Looking forward to the deep dive with you and Dr. Brandy.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -888,7 +889,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Booked! Table for 3 at 7. See you and Charlie there.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -902,7 +903,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Got the link, thanks Logan. I'll review the docs tonight and come with questions on the K-1 timing.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -916,7 +917,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Let's grab 15 min before the sprint review at 2. I think we can parallelize the backfill — will sketch it out.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -930,7 +931,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Agenda looks great. I'd add 10 min on the clinical validation data — that's what the partners will want to see.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -944,7 +945,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Perfect timing — these are exactly what I need to send Tom. Reviewing now and packaging them up.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -958,7 +959,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Yes — let's demo the new flow at the sprint review. Can you have the staging build ready by 1?</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -972,7 +973,7 @@
             </div>
             <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
               <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">9:30 works. I'll add the headcount plan to the agenda — want to align on Q3 hiring before the board update.</div></div>
-              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
+              <div class="msg-actions"><button class="btn primary sm" onclick="sendMsg(this)">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Snooze</button></div>
             </div></div></div>
           </div>
 
@@ -1250,6 +1251,11 @@
 </div>
 
 <script>
+  function sendMsg(btn) {
+    const row = btn.closest('.msg-row');
+    row.classList.add('sending');
+  }
+
   function toggleTask(row) {
     row.classList.toggle('done');
   }
