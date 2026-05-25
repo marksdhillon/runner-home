@@ -290,13 +290,10 @@
   .btn.sm { font-size: 12px; padding: 5px 10px; }
 
   /* ── Grid ── */
-  .grid-top { display: grid; grid-template-columns: 1fr 372px; grid-template-rows: auto auto; gap: 24px; margin-bottom: 24px; }
-  .grid-top .panel { grid-column: 1; grid-row: 1 / 3; }
-  .grid-top .panel-meetings { grid-column: 2; grid-row: 1; }
-  .grid-top .tasks-panel-wrap { grid-column: 2; grid-row: 2; }
+  .grid-top { display: grid; grid-template-columns: 1fr 372px; gap: 24px; margin-bottom: 24px; }
 
   /* ── Panels ── */
-  .panel { border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-sm); overflow: hidden; display: flex; flex-direction: column; }
+  .panel { border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--elev-sm); overflow: hidden; display: flex; flex-direction: column; align-self: start; }
   .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; border-bottom: 1px solid var(--hairline-soft); }
   .panel-title { font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-50); }
   .panel-link { font-size: 12px; color: var(--ink-42); cursor: pointer; background: none; border: none; font-family: var(--ui); display: inline-flex; align-items: center; gap: 4px; transition: color .12s; letter-spacing: -0.006em; }
@@ -313,7 +310,7 @@
   .ch-teams{ color: var(--ink-42) !important; }
 
   /* ── Inbox messages ── */
-  .inbox-scroll { overflow-y: auto; max-height: 416px; flex: 1; }
+  .inbox-scroll { overflow-y: auto; max-height: 416px; }
   .inbox-scroll::-webkit-scrollbar { width: 5px; }
   .inbox-scroll::-webkit-scrollbar-thumb { background: var(--ink-12); border-radius: 99px; }
   .inbox-scroll::-webkit-scrollbar-thumb:hover { background: var(--ink-22); }
@@ -834,7 +831,7 @@
         </div><!-- /inbox panel -->
 
         <!-- MEETINGS -->
-        <div class="panel panel-meetings rise d3">
+        <div class="panel rise d3">
           <div class="panel-header">
             <span class="panel-title">Upcoming</span>
             <button class="panel-link">Calendar
@@ -891,9 +888,10 @@
           </div>
         </div>
 
-        <!-- TASKS -->
-        <div class="tasks-panel-wrap">
-        <div class="tasks-panel rise d4">
+      </div><!-- /grid-top -->
+
+      <!-- TASKS -->
+      <div class="tasks-panel rise d4">
         <div class="panel-header">
           <span class="panel-title">Tasks</span>
           <button class="btn primary sm">
@@ -989,10 +987,8 @@
             </div>
           </div>
 
-        </div><!-- /tasks-panel -->
-        </div><!-- /tasks-panel-wrap -->
-
-      </div><!-- /grid-top -->
+        </div>
+      </div>
 
     </div>
   </div>
