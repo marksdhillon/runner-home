@@ -47,7 +47,7 @@
     --ui:   "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-    --sidebar-w: 224px;
+    --sidebar-w: 188px;
     --titlebar-h: 40px;
     --r-sm: 6px;
     --r-md: 9px;
@@ -141,10 +141,21 @@
   .icon-btn:hover { background: var(--ink-055); color: var(--ink-60); }
   .icon-btn svg { width: 15px; height: 15px; }
 
-  .sidebar-label { font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-32); padding: 14px 16px 6px; }
-  .sessions { flex: 1; padding: 0 6px; }
+  .sidebar-label { font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-28); padding: 12px 14px 4px; }
+  .sidebar-label { color: rgba(24,24,26,.28); }
+
+  /* Home nav */
+  .sidebar-home { display: flex; align-items: center; gap: 8px; padding: 0 10px 0 12px; height: 28px; border-radius: var(--r-sm); cursor: pointer; margin: 6px 6px 2px; transition: background .1s ease; }
+  .sidebar-home:hover { background: var(--ink-055); }
+  .sidebar-home.active { background: var(--ink-08); }
+  .sidebar-home svg { width: 13px; height: 13px; color: var(--ink-42); flex-shrink: 0; }
+  .sidebar-home span { font-size: 12px; font-weight: 500; color: var(--ink-72); }
+  .sidebar-home.active span { color: var(--ink); }
+  .sidebar-home.active::before { content: none; }
+
+  .sessions { flex: 1; padding: 0 4px; overflow-y: auto; }
   .session-item {
-    display: flex; align-items: center; padding: 0 8px 0 11px; height: 30px;
+    display: flex; align-items: center; padding: 0 6px 0 10px; height: 26px;
     border-radius: var(--r-sm); cursor: pointer; position: relative;
     transition: background .1s ease;
   }
@@ -152,14 +163,17 @@
   .session-item.active { background: var(--ink-08); }
   .session-item.active::before {
     content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-    height: 15px; width: 2.5px; background: var(--accent); border-radius: 99px;
+    height: 13px; width: 2px; background: var(--accent); border-radius: 99px;
   }
-  .session-title { flex: 1; font-size: 13px; color: var(--ink-60); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.006em; }
+  .session-title { flex: 1; font-size: 12px; color: var(--ink-55); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.004em; }
   .session-item.active .session-title { color: var(--ink); font-weight: 500; }
-  .session-item:hover .session-title { color: var(--ink-90); }
-  .session-icons { display: flex; align-items: center; gap: 3px; flex-shrink: 0; margin-left: 6px; }
-  .session-icons svg { width: 12px; height: 12px; color: var(--ink-32); }
-  .session-time { font-family: var(--mono); font-size: 10.5px; color: var(--ink-32); margin-left: 7px; flex-shrink: 0; }
+  .session-item:hover .session-title { color: var(--ink-72); }
+  .session-icons { display: flex; align-items: center; gap: 3px; flex-shrink: 0; margin-left: 4px; }
+  .session-icons svg { width: 11px; height: 11px; color: var(--ink-28); }
+  .session-time { font-family: var(--mono); font-size: 9.5px; color: var(--ink-28); margin-left: 5px; flex-shrink: 0; }
+
+  /* Favourites star */
+  .fav-star { width: 12px; height: 12px; flex-shrink: 0; color: var(--ink-28); margin-right: 1px; }
 
   .sidebar-bottom { padding: 8px 6px 10px; }
   .sidebar-divider { height: 1px; background: var(--hairline-soft); margin: 8px 10px; }
@@ -167,7 +181,7 @@
   .bottom-item:hover { background: var(--ink-055); }
   .bi-icon { color: var(--ink-42); display: flex; flex-shrink: 0; }
   .bi-icon svg { width: 15px; height: 15px; }
-  .bi-label { flex: 1; font-size: 13px; color: var(--ink-60); letter-spacing: -0.006em; }
+  .bi-label { flex: 1; font-size: 12px; color: var(--ink-60); letter-spacing: -0.004em; }
   .bottom-item:hover .bi-label { color: var(--ink-90); }
   .bottom-item:hover .bi-icon { color: var(--ink-72); }
   .bi-count { font-family: var(--mono); font-size: 10.5px; color: var(--ink-42); }
@@ -175,7 +189,7 @@
   .workspace-item:hover { background: var(--ink-055); }
   .ws-icon { width: 20px; height: 20px; border-radius: 6px; background: linear-gradient(150deg, var(--accent), var(--accent-deep)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: var(--elev-sm); }
   .ws-icon svg { width: 11px; height: 11px; color: #fff; }
-  .ws-label { font-size: 13px; color: var(--ink-72); font-weight: 500; flex: 1; }
+  .ws-label { font-size: 12px; color: var(--ink-72); font-weight: 500; flex: 1; }
   .ws-chevron { color: var(--ink-32); }
   .ws-chevron svg { width: 13px; height: 13px; }
 
@@ -210,10 +224,8 @@
     background: linear-gradient(180deg, var(--accent), var(--accent-deep));
   }
   .rec-top { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
-  .rec-agent { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: .02em; color: var(--accent-deep); }
-  .rec-agent .orb { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); position: relative; }
+  .rec-label { font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-60); }
   .rec-agent .orb::after { display: none; }
-  .rec-flag { font-family: var(--mono); font-size: 10.5px; font-weight: 500; color: var(--accent-deep); background: rgba(24,24,26,.08); padding: 2px 7px; border-radius: 5px; letter-spacing: 0; }
   .rec-dismiss { margin-left: auto; color: var(--ink-32); cursor: pointer; display: flex; padding: 3px; border-radius: 5px; transition: all .12s; }
   .rec-dismiss:hover { color: var(--ink-72); background: var(--ink-055); }
   .rec-dismiss svg { width: 14px; height: 14px; }
@@ -262,6 +274,10 @@
   .ch-teams{ color: var(--ink-42) !important; }
 
   /* ── Inbox messages ── */
+  .inbox-scroll { overflow-y: auto; max-height: 380px; }
+  .inbox-scroll::-webkit-scrollbar { width: 5px; }
+  .inbox-scroll::-webkit-scrollbar-thumb { background: var(--ink-12); border-radius: 99px; }
+  .inbox-scroll::-webkit-scrollbar-thumb:hover { background: var(--ink-22); }
   .msg-row { border-bottom: 1px solid var(--hairline-soft); }
   .msg-row:last-child { border-bottom: none; }
   .msg-line { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; transition: background .1s ease; }
@@ -418,22 +434,46 @@
       </div>
     </div>
 
-    <div class="sidebar-label">Sessions</div>
+    <!-- Home -->
+    <div class="sidebar-home active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 12L12 4l9 8"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>
+      <span>Home</span>
+    </div>
+
+    <!-- Favourites -->
+    <div class="sidebar-label">Favourites</div>
+    <div class="sessions" style="flex:0">
+      <div class="session-item">
+        <svg class="fav-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        <span class="session-title">Samira a16z prep</span>
+      </div>
+      <div class="session-item">
+        <svg class="fav-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        <span class="session-title">Akido Q2 OKR review</span>
+      </div>
+      <div class="session-item">
+        <svg class="fav-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        <span class="session-title">Daily brief · Runner</span>
+      </div>
+    </div>
+
+    <!-- Recent -->
+    <div class="sidebar-label">Recent</div>
     <div class="sessions">
-      <div class="session-item active"><span class="session-title">Home</span></div>
       <div class="session-item">
         <span class="session-title">Design Runner home page</span>
         <div class="session-icons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
         <span class="session-time">1h</span>
       </div>
       <div class="session-item"><span class="session-title">Answer UFD question</span><span class="session-time">3h</span></div>
-      <div class="session-item"><span class="session-title">Session cleanup · every 120m</span><span class="session-time">5h</span></div>
+      <div class="session-item"><span class="session-title">Session cleanup · 120m</span><span class="session-time">5h</span></div>
       <div class="session-item">
         <span class="session-title">Weekend prep + Mon brief</span>
         <div class="session-icons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></div>
         <span class="session-time">1d</span>
       </div>
       <div class="session-item"><span class="session-title">Get visa status update</span><span class="session-time">2d</span></div>
+      <div class="session-item"><span class="session-title">Gild intro strategy</span><span class="session-time">3d</span></div>
     </div>
 
     <div class="sidebar-bottom">
@@ -482,8 +522,7 @@
       <!-- THE RECOMMENDATION -->
       <div class="rec rise d2" id="rec">
         <div class="rec-top">
-          <span class="rec-agent"><span class="orb"></span> RUNNER</span>
-          <span class="rec-flag">Overdue · 2 days</span>
+          <span class="rec-label">Do this first</span>
           <span class="rec-dismiss" onclick="document.getElementById('rec').style.display='none'" title="Dismiss">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </span>
@@ -521,6 +560,8 @@
               </button>
             </div>
           </div>
+
+          <div class="inbox-scroll">
 
           <div class="msg-row open">
             <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
@@ -568,7 +609,78 @@
               <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button></div>
             </div></div></div>
           </div>
-        </div>
+
+          <div class="msg-row">
+            <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
+              <span class="msg-ch"><svg class="ch-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+              <span class="msg-sender">Samira Khoury</span>
+              <span class="msg-gist">Prepping for Tuesday — anything you want covered?</span>
+              <span class="msg-time">5h</span>
+              <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
+              <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Yes — would love to walk through the consumer thesis and get your read on Gild. I'll send over a one-pager tonight.</div></div>
+              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button></div>
+            </div></div></div>
+          </div>
+
+          <div class="msg-row">
+            <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
+              <span class="msg-ch"><svg class="ch-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-11.3 7.3L3 21l1.7-6.7A8 8 0 1 1 21 12z"/></svg></span>
+              <span class="msg-sender">Kent</span>
+              <span class="msg-gist">Still on for 9am tomorrow? Erewhon parking is rough</span>
+              <span class="msg-time">6h</span>
+              <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
+              <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Still on — I'll grab street parking on Beverly. See you at 9.</div></div>
+              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button></div>
+            </div></div></div>
+          </div>
+
+          <div class="msg-row">
+            <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
+              <span class="msg-ch"><svg class="ch-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+              <span class="msg-sender">Maggi Shen</span>
+              <span class="msg-gist">Sumly weekly — retention up 8%, churn question</span>
+              <span class="msg-time">8h</span>
+              <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
+              <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Great numbers on retention — the 8% lift is real signal. On churn: let's dig into the D30 cohort on Monday, I have a hypothesis on the onboarding drop-off.</div></div>
+              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button></div>
+            </div></div></div>
+          </div>
+
+          <div class="msg-row">
+            <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
+              <span class="msg-ch"><svg class="ch-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+              <span class="msg-sender">Jared Kim</span>
+              <span class="msg-gist">OKR deck v2 attached — lmk before EOD</span>
+              <span class="msg-time">9h</span>
+              <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
+              <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">On it — will review tonight and get you notes before I sleep. Deck looks cleaner already from the preview.</div></div>
+              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button></div>
+            </div></div></div>
+          </div>
+
+          <div class="msg-row">
+            <div class="msg-line" onclick="this.parentElement.classList.toggle('open')">
+              <span class="msg-ch"><svg class="ch-wa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.7-5.2A8.5 8.5 0 1 1 21 11.5z"/></svg></span>
+              <span class="msg-sender">Willie Reyes</span>
+              <span class="msg-gist">AskSAMIE invite — Wed 2pm PT, confirm?</span>
+              <span class="msg-time">11h</span>
+              <span class="msg-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="msg-expand"><div class="msg-expand-inner"><div class="msg-expand-pad">
+              <div class="draft-block"><div class="draft-label"><span class="orb"></span> Runner draft</div><div class="draft-text">Confirmed — Wed 2pm works great. Looking forward to the deep dive with you and Dr. Brandy.</div></div>
+              <div class="msg-actions"><button class="btn primary sm">Send</button><button class="btn sm">Edit</button><button class="btn ghost sm">Skip</button></div>
+            </div></div></div>
+          </div>
+
+          </div><!-- /inbox-scroll -->
 
         <!-- MEETINGS -->
         <div class="panel rise d3">
