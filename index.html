@@ -296,69 +296,129 @@
   /* ── Add Task Drawer ── */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 300;
+    background: rgba(24,24,26,.10);
   }
   .modal-overlay.open { display: block; }
   .modal {
-    position: fixed; top: 0; right: 0; bottom: 0; width: 340px;
+    position: fixed; top: 0; right: 0; bottom: 0; width: 420px;
     background: #fff; border-left: 1px solid rgba(24,24,26,.08);
-    box-shadow: -2px 0 20px rgba(24,24,26,.08);
+    box-shadow: -4px 0 28px rgba(24,24,26,.10);
     display: flex; flex-direction: column;
-    transform: translateX(100%); transition: transform .22s cubic-bezier(.22,1,.36,1);
+    transform: translateX(100%); transition: transform .24s cubic-bezier(.22,1,.36,1);
   }
   .modal-overlay.open .modal { transform: translateX(0); }
 
   .modal-header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 24px 0;
+    padding: 22px 26px 0;
   }
-  .modal-title { font-size: 13px; font-weight: 500; color: rgba(24,24,26,.4); letter-spacing: -0.01em; }
-  .modal-close { width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(24,24,26,.3); transition: all .1s; border: none; background: none; }
+  .modal-title { font-size: 12.5px; font-weight: 500; color: rgba(24,24,26,.38); letter-spacing: -0.01em; }
+  .modal-close { width: 24px; height: 24px; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(24,24,26,.3); transition: all .1s; border: none; background: none; }
   .modal-close:hover { background: rgba(24,24,26,.06); color: rgba(24,24,26,.6); }
   .modal-close svg { width: 13px; height: 13px; }
 
-  .modal-body { padding: 8px 0 0; display: flex; flex-direction: column; overflow-y: auto; flex: 1; }
-  .modal-footer { padding: 16px 24px 24px; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+  .modal-body { padding: 0; display: flex; flex-direction: column; overflow-y: auto; flex: 1; }
+  .modal-footer {
+    padding: 14px 26px; display: flex; align-items: center; gap: 8px;
+    border-top: 1px solid rgba(24,24,26,.06);
+  }
+  .modal-footer .spacer { flex: 1; }
+  /* task title */
+  .task-title-wrap { padding: 16px 26px 18px; }
+  .task-title-wrap input {
+    font-family: var(--ui); font-size: 19px; font-weight: 600;
+    color: var(--ink); background: transparent; border: none; outline: none;
+    width: 100%; letter-spacing: -0.025em; line-height: 1.3;
+  }
+  .task-title-wrap input::placeholder { color: rgba(24,24,26,.2); }
 
-  .notion-field {
-    display: flex; flex-direction: column;
-    padding: 6px 24px; transition: background .1s;
+  /* meta grid: compact property rows like Notion */
+  .task-meta { padding: 0 26px 16px; display: flex; flex-direction: column; gap: 2px; }
+  .meta-row { display: flex; align-items: center; min-height: 32px; gap: 12px; }
+  .meta-key {
+    width: 104px; flex-shrink: 0; font-size: 12.5px; color: rgba(24,24,26,.42);
+    font-weight: 450; letter-spacing: -0.006em; display: flex; align-items: center; gap: 7px;
   }
-  .notion-field:hover { background: rgba(24,24,26,.03); }
-  .notion-field-label {
-    font-size: 11px; color: rgba(24,24,26,.4); font-weight: 500;
-    letter-spacing: -0.005em; margin-bottom: 2px;
-  }
-  .notion-field input, .notion-field textarea {
+  .meta-key svg { width: 14px; height: 14px; color: rgba(24,24,26,.32); flex-shrink: 0; }
+  .meta-val { flex: 1; min-width: 0; }
+  .meta-val input {
     font-family: var(--ui); font-size: 13px; color: var(--ink);
     background: transparent; border: none; outline: none; width: 100%;
-    letter-spacing: -0.006em; line-height: 1.5; padding: 0;
-    resize: none;
+    letter-spacing: -0.006em; padding: 4px 6px; border-radius: 5px;
+    transition: background .1s;
   }
-  .notion-field input::placeholder, .notion-field textarea::placeholder { color: rgba(24,24,26,.2); }
+  .meta-val input:hover { background: rgba(24,24,26,.03); }
+  .meta-val input:focus { background: rgba(24,24,26,.05); }
+  .meta-val input::placeholder { color: rgba(24,24,26,.24); }
 
-  .notion-task-input {
-    padding: 20px 24px 12px; border-bottom: 1px solid rgba(24,24,26,.06);
-    margin-bottom: 4px;
-  }
-  .notion-task-input input {
-    font-family: var(--ui); font-size: 18px; font-weight: 500;
-    color: var(--ink); background: transparent; border: none; outline: none;
-    width: 100%; letter-spacing: -0.02em; line-height: 1.4;
-  }
-  .notion-task-input input::placeholder { color: rgba(24,24,26,.18); }
-
-  .notion-priority { display: flex; gap: 5px; flex-wrap: wrap; padding-top: 2px; }
+  .pri-pills { display: flex; gap: 5px; }
   .p-opt { display: none; }
   .p-lbl {
-    font-size: 11.5px; font-weight: 500; color: rgba(24,24,26,.5);
-    padding: 3px 9px; border-radius: 4px; border: 1px solid rgba(24,24,26,.1);
-    cursor: pointer; transition: all .1s; background: transparent;
+    font-size: 12px; font-weight: 500; color: rgba(24,24,26,.5);
+    padding: 3px 10px; border-radius: 5px; cursor: pointer; transition: all .1s;
     letter-spacing: -0.004em;
   }
-  .p-lbl:hover { background: rgba(24,24,26,.05); color: rgba(24,24,26,.7); }
-  .p-opt:checked + .p-lbl { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .p-lbl:hover { background: rgba(24,24,26,.05); color: rgba(24,24,26,.72); }
+  .p-opt:checked + .p-lbl { background: var(--ink); color: #fff; }
 
-  .notion-hint { font-size: 11px; color: rgba(24,24,26,.3); margin-top: 4px; line-height: 1.5; letter-spacing: -0.003em; }
+  /* the brief — the heart of the drawer */
+  .brief-section { border-top: 1px solid rgba(24,24,26,.06); padding: 18px 26px; }
+  .brief-label {
+    font-size: 12.5px; font-weight: 600; color: var(--ink);
+    letter-spacing: -0.01em; margin-bottom: 3px;
+  }
+  .brief-sub { font-size: 11.5px; color: rgba(24,24,26,.4); line-height: 1.5; margin-bottom: 11px; letter-spacing: -0.004em; }
+  .brief-textarea {
+    font-family: var(--ui); font-size: 13px; color: var(--ink);
+    background: rgba(24,24,26,.025); border: 1px solid rgba(24,24,26,.07);
+    border-radius: 8px; padding: 11px 12px; width: 100%; resize: none;
+    outline: none; line-height: 1.6; letter-spacing: -0.005em;
+    transition: border-color .12s, background .12s;
+  }
+  .brief-textarea:focus { background: #fff; border-color: rgba(24,24,26,.22); }
+  .brief-textarea::placeholder { color: rgba(24,24,26,.26); }
+
+  /* handoff: do it yourself or let runner run */
+  .handoff {
+    margin: 0 26px 18px; border: 1px solid rgba(24,24,26,.1);
+    border-radius: 10px; overflow: hidden;
+  }
+  .handoff-head {
+    display: flex; align-items: center; gap: 9px; padding: 13px 14px;
+    background: rgba(24,24,26,.025);
+  }
+  .handoff-orb {
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    background: var(--ink); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; filter: grayscale(1) brightness(1.6);
+  }
+  .handoff-title { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+  .handoff-toggle {
+    margin-left: auto; position: relative; width: 36px; height: 20px;
+    border-radius: 99px; background: rgba(24,24,26,.16); cursor: pointer;
+    transition: background .15s; flex-shrink: 0; border: none;
+  }
+  .handoff-toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+    border-radius: 50%; background: #fff; transition: transform .18s cubic-bezier(.22,1,.36,1);
+    box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  }
+  .handoff.on .handoff-toggle { background: var(--ink); }
+  .handoff.on .handoff-toggle::after { transform: translateX(16px); }
+
+  .handoff-body { display: none; padding: 13px 14px 14px; border-top: 1px solid rgba(24,24,26,.07); }
+  .handoff.on .handoff-body { display: block; }
+  .handoff-body .brief-textarea { font-size: 12.5px; }
+  .handoff-can { margin-top: 11px; }
+  .handoff-can-label {
+    font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+    color: rgba(24,24,26,.35); margin-bottom: 7px;
+  }
+  .handoff-cap {
+    display: flex; align-items: center; gap: 8px; padding: 5px 0;
+    font-size: 12px; color: rgba(24,24,26,.6); letter-spacing: -0.004em;
+  }
+  .handoff-cap svg { width: 14px; height: 14px; color: rgba(24,24,26,.32); flex-shrink: 0; }
 
 
 
@@ -1098,51 +1158,69 @@
 
     <div class="modal-body">
 
-      <div class="notion-task-input">
-        <input type="text" placeholder="Task name" />
+      <div class="task-title-wrap">
+        <input type="text" placeholder="What do you need done?" autofocus />
       </div>
 
-      <div class="notion-field">
-        <div class="notion-field-label">Due date</div>
-        <input type="date" />
-      </div>
-
-      <div class="notion-field">
-        <div class="notion-field-label">Estimated hours to complete</div>
-        <input type="number" placeholder="e.g. 2.5" min="0" step="0.5" />
-      </div>
-
-      <div class="notion-field">
-        <div class="notion-field-label">Priority</div>
-        <div class="notion-priority">
-          <input class="p-opt" type="radio" name="priority" id="p-low" value="low">
-          <label class="p-lbl" for="p-low">Low</label>
-          <input class="p-opt" type="radio" name="priority" id="p-med" value="medium">
-          <label class="p-lbl" for="p-med">Medium</label>
-          <input class="p-opt" type="radio" name="priority" id="p-high" value="high" checked>
-          <label class="p-lbl" for="p-high">High</label>
-          <input class="p-opt" type="radio" name="priority" id="p-block" value="blocking">
-          <label class="p-lbl" for="p-block">Blocking</label>
+      <div class="task-meta">
+        <div class="meta-row">
+          <div class="meta-key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Due</div>
+          <div class="meta-val"><input type="text" placeholder="Add a date" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" /></div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Effort</div>
+          <div class="meta-val"><input type="text" placeholder="Estimated hours to complete" /></div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V4a1 1 0 0 1 1-1h11l-2 4 2 4H5"/></svg>Priority</div>
+          <div class="meta-val">
+            <div class="pri-pills">
+              <input class="p-opt" type="radio" name="priority" id="p-low" value="low">
+              <label class="p-lbl" for="p-low">Low</label>
+              <input class="p-opt" type="radio" name="priority" id="p-med" value="medium">
+              <label class="p-lbl" for="p-med">Medium</label>
+              <input class="p-opt" type="radio" name="priority" id="p-high" value="high" checked>
+              <label class="p-lbl" for="p-high">High</label>
+              <input class="p-opt" type="radio" name="priority" id="p-block" value="blocking">
+              <label class="p-lbl" for="p-block">Blocking</label>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="notion-field">
-        <div class="notion-field-label">Why does this matter?</div>
-        <textarea rows="3" placeholder="Give Runner context so it can prioritize, follow up, and catch dependencies…"></textarea>
-        <div class="notion-hint">Runner learns from this to act on your behalf over time.</div>
+      <div class="brief-section">
+        <div class="brief-label">The full picture</div>
+        <div class="brief-sub">The more Runner knows — context, goal, who's involved, what "done" looks like — the more it can do before you even pick it up.</div>
+        <textarea class="brief-textarea" rows="4" placeholder="What's the goal, why does it matter, what's the deadline pressure, who's waiting, and what does a great outcome look like?"></textarea>
       </div>
 
-      <div class="notion-field">
-        <div class="notion-field-label">Anything blocking this?</div>
-        <input type="text" placeholder="e.g. Waiting on Tian's Figma assets" />
-        <div class="notion-hint">Runner will flag you if the blocker slips.</div>
+      <div class="handoff" id="handoff">
+        <div class="handoff-head" onclick="document.getElementById('handoff').classList.toggle('on')">
+          <span class="handoff-orb">🏃</span>
+          <span class="handoff-title">Let Runner take a first pass</span>
+          <button class="handoff-toggle" type="button"></button>
+        </div>
+        <div class="handoff-body">
+          <textarea class="brief-textarea" rows="3" placeholder="Tell Runner exactly what to do — e.g. 'Draft the email to Tom with the updated timeline, pull the latest Figma assets, and attach the revised deck.'"></textarea>
+          <div class="handoff-can">
+            <div class="handoff-can-label">Runner can pull from</div>
+            <div class="handoff-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Gmail — recent threads with Tom</div>
+            <div class="handoff-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Calendar — your open slots this week</div>
+            <div class="handoff-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Drive — the latest design files</div>
+          </div>
+        </div>
       </div>
 
     </div>
 
     <div class="modal-footer">
       <button class="btn ghost sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">Cancel</button>
-      <button class="btn primary sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">Add task</button>
+      <div class="spacer"></div>
+      <button class="btn sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">Save for later</button>
+      <button class="btn primary sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        Hand to Runner
+      </button>
     </div>
 
   </div>
