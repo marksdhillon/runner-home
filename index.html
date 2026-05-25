@@ -378,47 +378,26 @@
   .brief-textarea:focus { background: #fff; border-color: rgba(24,24,26,.22); }
   .brief-textarea::placeholder { color: rgba(24,24,26,.26); }
 
-  /* handoff: do it yourself or let runner run */
+  /* handoff: let runner try first — opens a session */
   .handoff {
     margin: 0 26px 18px; border: 1px solid rgba(24,24,26,.1);
-    border-radius: 10px; overflow: hidden;
+    border-radius: 10px; overflow: hidden; cursor: pointer;
+    transition: border-color .12s, background .12s;
   }
+  .handoff:hover { border-color: rgba(24,24,26,.22); background: rgba(24,24,26,.02); }
   .handoff-head {
-    display: flex; align-items: center; gap: 9px; padding: 13px 14px;
-    background: rgba(24,24,26,.025);
+    display: flex; align-items: center; gap: 11px; padding: 13px 14px;
   }
   .handoff-orb {
-    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0;
     background: var(--ink); display: flex; align-items: center; justify-content: center;
     font-size: 13px; filter: grayscale(1) brightness(1.6);
   }
+  .handoff-copy { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
   .handoff-title { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
-  .handoff-toggle {
-    margin-left: auto; position: relative; width: 36px; height: 20px;
-    border-radius: 99px; background: rgba(24,24,26,.16); cursor: pointer;
-    transition: background .15s; flex-shrink: 0; border: none;
-  }
-  .handoff-toggle::after {
-    content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
-    border-radius: 50%; background: #fff; transition: transform .18s cubic-bezier(.22,1,.36,1);
-    box-shadow: 0 1px 2px rgba(0,0,0,.2);
-  }
-  .handoff.on .handoff-toggle { background: var(--ink); }
-  .handoff.on .handoff-toggle::after { transform: translateX(16px); }
-
-  .handoff-body { display: none; padding: 13px 14px 14px; border-top: 1px solid rgba(24,24,26,.07); }
-  .handoff.on .handoff-body { display: block; }
-  .handoff-body .brief-textarea { font-size: 12.5px; }
-  .handoff-can { margin-top: 11px; }
-  .handoff-can-label {
-    font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
-    color: rgba(24,24,26,.35); margin-bottom: 7px;
-  }
-  .handoff-cap {
-    display: flex; align-items: center; gap: 8px; padding: 5px 0;
-    font-size: 12px; color: rgba(24,24,26,.6); letter-spacing: -0.004em;
-  }
-  .handoff-cap svg { width: 14px; height: 14px; color: rgba(24,24,26,.32); flex-shrink: 0; }
+  .handoff-desc { font-size: 11px; color: rgba(24,24,26,.42); letter-spacing: -0.004em; line-height: 1.4; }
+  .handoff-arrow { width: 16px; height: 16px; color: rgba(24,24,26,.3); flex-shrink: 0; transition: transform .15s, color .12s; }
+  .handoff:hover .handoff-arrow { color: var(--ink); transform: translateX(2px); }
 
 
 
@@ -1159,7 +1138,7 @@
     <div class="modal-body">
 
       <div class="task-title-wrap">
-        <input type="text" placeholder="What do you need done?" autofocus />
+        <input type="text" id="taskTitle" placeholder="What do you need done?" autofocus />
       </div>
 
       <div class="task-meta">
@@ -1191,23 +1170,17 @@
       <div class="brief-section">
         <div class="brief-label">The full picture</div>
         <div class="brief-sub">The more Runner knows — context, goal, who's involved, what "done" looks like — the more it can do before you even pick it up.</div>
-        <textarea class="brief-textarea" rows="4" placeholder="What's the goal, why does it matter, what's the deadline pressure, who's waiting, and what does a great outcome look like?"></textarea>
+        <textarea class="brief-textarea" id="taskBrief" rows="4" placeholder="What's the goal, why does it matter, what's the deadline pressure, who's waiting, and what does a great outcome look like?"></textarea>
       </div>
 
-      <div class="handoff" id="handoff">
-        <div class="handoff-head" onclick="document.getElementById('handoff').classList.toggle('on')">
+      <div class="handoff" onclick="handToRunner()">
+        <div class="handoff-head">
           <span class="handoff-orb">🏃</span>
-          <span class="handoff-title">Let Runner try first</span>
-          <button class="handoff-toggle" type="button"></button>
-        </div>
-        <div class="handoff-body">
-          <textarea class="brief-textarea" rows="3" placeholder="Tell Runner exactly what to do — e.g. 'Draft the email to Tom with the updated timeline, pull the latest Figma assets, and attach the revised deck.'"></textarea>
-          <div class="handoff-can">
-            <div class="handoff-can-label">Runner can pull from</div>
-            <div class="handoff-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Gmail — recent threads with Tom</div>
-            <div class="handoff-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Calendar — your open slots this week</div>
-            <div class="handoff-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Drive — the latest design files</div>
+          <div class="handoff-copy">
+            <span class="handoff-title">Let Runner try first</span>
+            <span class="handoff-desc">Opens a session with everything above — Runner takes a crack before you do</span>
           </div>
+          <svg class="handoff-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </div>
       </div>
 
@@ -1279,6 +1252,21 @@
       ask.focus();
     }
   });
+
+  // Hand a task brief to Runner — closes drawer, opens a session prefilled with context
+  function handToRunner() {
+    const title = (document.getElementById('taskTitle').value || '').trim();
+    const brief = (document.getElementById('taskBrief').value || '').trim();
+    const pri = (document.querySelector('input[name="priority"]:checked') || {}).value || '';
+    let prompt = title || 'New task';
+    if (brief) prompt += ' — ' + brief;
+    if (pri) prompt += ' (priority: ' + pri + ')';
+    document.getElementById('addTaskModal').classList.remove('open');
+    ask.value = prompt;
+    askbar.classList.add('has-text');
+    ask.focus();
+    ask.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   // Close quick-actions dropdown on outside click
   document.addEventListener('click', function(e) {
