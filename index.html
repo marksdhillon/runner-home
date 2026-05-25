@@ -296,58 +296,66 @@
   /* ── Add Task Drawer ── */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 300;
-    background: rgba(24,24,26,.18);
+    background: rgba(24,24,26,.12);
   }
   .modal-overlay.open { display: block; }
   .modal {
-    position: fixed; top: 0; right: 0; bottom: 0; width: 380px;
-    background: var(--surface); border-left: 1px solid var(--hairline);
-    box-shadow: -8px 0 32px rgba(24,24,26,.12);
+    position: fixed; top: 0; right: 0; bottom: 0; width: 360px;
+    background: var(--surface); border-left: 1px solid var(--hairline-soft);
+    box-shadow: -12px 0 40px rgba(24,24,26,.10);
     display: flex; flex-direction: column;
-    transform: translateX(100%); transition: transform .24s cubic-bezier(.22,1,.36,1);
+    transform: translateX(100%); transition: transform .26s cubic-bezier(.22,1,.36,1);
   }
   .modal-overlay.open .modal { transform: translateX(0); }
+
   .modal-header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px 14px; border-bottom: 1px solid var(--hairline-soft);
-    flex-shrink: 0;
+    padding: 20px 22px 16px; flex-shrink: 0;
   }
-  .modal-title { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
-  .modal-close { width: 26px; height: 26px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-32); transition: all .12s; border: none; background: none; }
-  .modal-close:hover { background: var(--ink-055); color: var(--ink-72); }
-  .modal-close svg { width: 14px; height: 14px; }
-  .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; flex: 1; }
-  .modal-footer { padding: 12px 20px 16px; border-top: 1px solid var(--hairline-soft); display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+  .modal-title { font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.025em; }
+  .modal-close { width: 28px; height: 28px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-28); transition: all .12s; border: none; background: none; }
+  .modal-close:hover { background: var(--ink-055); color: var(--ink-60); }
+  .modal-close svg { width: 13px; height: 13px; }
 
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .field label { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-50); }
+  .modal-body { padding: 4px 22px 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 14px 22px 20px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field label {
+    font-size: 11.5px; font-weight: 550; color: var(--ink-60);
+    letter-spacing: -0.003em;
+  }
   .field input, .field select, .field textarea {
     font-family: var(--ui); font-size: 13px; color: var(--ink);
     background: var(--canvas); border: 1px solid var(--hairline);
-    border-radius: var(--r-sm); padding: 8px 10px;
+    border-radius: var(--r-sm); padding: 9px 11px;
     transition: border-color .12s, box-shadow .12s;
-    outline: none; width: 100%;
-    letter-spacing: -0.004em;
+    outline: none; width: 100%; letter-spacing: -0.004em;
   }
   .field input:focus, .field select:focus, .field textarea:focus {
-    border-color: var(--ink-42); box-shadow: 0 0 0 3px var(--ink-055);
+    border-color: var(--ink-32); box-shadow: 0 0 0 3px var(--ink-055);
   }
-  .field textarea { resize: none; line-height: 1.55; }
-  .field input::placeholder, .field textarea::placeholder { color: var(--ink-28); }
-  .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px; padding-right: 28px; }
-  .field-hint { font-size: 11px; color: var(--ink-42); margin-top: 2px; line-height: 1.45; letter-spacing: -0.003em; }
+  .field textarea { resize: none; line-height: 1.6; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--ink-22); }
+  .field-hint { font-size: 11px; color: var(--ink-32); line-height: 1.5; letter-spacing: -0.003em; }
+
+  .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 9px center; background-size: 13px; padding-right: 28px; }
+
+  .drawer-divider { height: 1px; background: var(--hairline-soft); margin: 0 -22px; }
+
   .priority-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
   .priority-opt { display: none; }
   .priority-label {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    padding: 8px 6px; border-radius: var(--r-sm); border: 1px solid var(--hairline);
-    cursor: pointer; transition: all .12s; text-align: center; font-size: 11.5px;
-    color: var(--ink-60); font-weight: 500; letter-spacing: -0.004em;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 9px 4px; border-radius: var(--r-sm); border: 1px solid var(--hairline);
+    cursor: pointer; transition: all .12s; text-align: center;
+    font-size: 11px; color: var(--ink-50); font-weight: 500; letter-spacing: -0.002em;
+    background: var(--canvas);
   }
-  .priority-label:hover { border-color: var(--ink-22); background: var(--ink-035); }
+  .priority-label:hover { border-color: var(--ink-22); color: var(--ink-72); }
   .priority-opt:checked + .priority-label { border-color: var(--ink); background: var(--ink); color: #fff; }
-  .priority-emoji { font-size: 15px; }
+  .priority-emoji { font-size: 14px; line-height: 1; }
 
 
   /* ── Grid ── */
@@ -1077,28 +1085,33 @@
 <div class="modal-overlay" id="addTaskModal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">New Task</span>
+      <span class="modal-title">New task</span>
       <button class="modal-close" onclick="document.getElementById('addTaskModal').classList.remove('open')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
+
     <div class="modal-body">
 
       <div class="field">
-        <label>Task</label>
-        <input type="text" placeholder="What needs to get done?" />
+        <label>What needs to get done?</label>
+        <input type="text" placeholder="e.g. Send revised deck to Tom" />
       </div>
+
+      <div class="drawer-divider"></div>
 
       <div class="field-row">
         <div class="field">
-          <label>Due Date</label>
+          <label>Due date</label>
           <input type="date" />
         </div>
         <div class="field">
-          <label>Est. Hours</label>
+          <label>Estimated hours to complete</label>
           <input type="number" placeholder="e.g. 2.5" min="0" step="0.5" />
         </div>
       </div>
+
+      <div class="drawer-divider"></div>
 
       <div class="field">
         <label>Priority</label>
@@ -1110,24 +1123,27 @@
         </div>
       </div>
 
+      <div class="drawer-divider"></div>
+
       <div class="field">
-        <label>Why it matters <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-32)">— help Runner understand context</span></label>
-        <textarea rows="2" placeholder="e.g. This unblocks the Akido sprint review and Tom is waiting on it…"></textarea>
-        <span class="field-hint">Runner uses this to prioritize, draft follow-ups, and flag if something else depends on it.</span>
+        <label>Why does this matter?</label>
+        <textarea rows="3" placeholder="e.g. Unblocks the Akido sprint review — Tom is waiting and it's two days late…"></textarea>
+        <span class="field-hint">Runner uses this to understand urgency, draft follow-ups, and catch if something depends on it.</span>
       </div>
 
       <div class="field">
-        <label>Dependencies <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-32)">— optional</span></label>
-        <input type="text" placeholder="What needs to happen before this can start?" />
-        <span class="field-hint">Runner will watch for blockers and alert you if a dependency slips.</span>
+        <label>Anything blocking this?</label>
+        <input type="text" placeholder="e.g. Waiting on Tian's Figma assets" />
+        <span class="field-hint">Runner will flag you if a blocker slips.</span>
       </div>
 
     </div>
+
     <div class="modal-footer">
       <button class="btn ghost sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">Cancel</button>
       <button class="btn primary sm" onclick="document.getElementById('addTaskModal').classList.remove('open')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>
-        Add Task
+        Add task
       </button>
     </div>
   </div>
