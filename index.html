@@ -221,39 +221,6 @@
   .stat-sep { color: var(--ink-22); margin: 0 10px; font-size: 11px; }
 
   /* ── Command bar: Runner's front door ── */
-  .askbar-wrap { margin-bottom: 30px; }
-  .askbar {
-    display: flex; align-items: center; gap: 13px;
-    background: var(--surface); border: 1px solid var(--hairline);
-    border-radius: var(--r-lg); padding: 0 12px 0 15px; height: 54px;
-    box-shadow: var(--elev-sm); cursor: text;
-    transition: border-color .16s ease, box-shadow .16s ease;
-  }
-  .askbar:focus-within { border-color: var(--ink-32); box-shadow: 0 0 0 4px var(--ink-055), var(--elev-md); }
-  .askbar-orb {
-    width: 22px; height: 22px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; filter: grayscale(1) brightness(0);
-  }
-  
-  .askbar input {
-    flex: 1; min-width: 0; border: none; outline: none; background: transparent;
-    font-family: var(--ui); font-size: 14.5px; color: var(--ink); letter-spacing: -0.01em;
-  }
-  .askbar input::placeholder { color: var(--ink-42); transition: opacity .26s ease; }
-  .askbar input.ph-fade::placeholder { opacity: 0; }
-  .askbar-kbd { font-family: var(--mono); font-size: 11px; color: var(--ink-32); background: var(--ink-035); border: 1px solid var(--hairline-soft); border-radius: 5px; padding: 3px 7px; flex-shrink: 0; transition: opacity .14s; }
-  .askbar:focus-within .askbar-kbd { opacity: 0; pointer-events: none; }
-  .askbar-send {
-    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; margin-left: -4px;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--ink); color: #fff; cursor: pointer; opacity: .32;
-    transition: opacity .14s ease, transform .12s ease;
-  }
-  .askbar.has-text .askbar-send { opacity: 1; }
-  .askbar-send:hover { transform: translateY(-1px); }
-  .askbar-send svg { width: 16px; height: 16px; }
-
   /* ── Do this first: compact inline banner ── */
   .rec {
     margin-bottom: 24px;
@@ -745,16 +712,6 @@
         </div>
       </div>
 
-      <div class="askbar-wrap rise d3">
-        <div class="askbar" id="askbar" onclick="document.getElementById('askInput').focus()">
-          <span class="askbar-orb">🏃</span>
-          <input id="askInput" type="text" autocomplete="off" spellcheck="false" placeholder="Ask Runner to handle something…" />
-          <span class="askbar-kbd">⌘K</span>
-          <div class="askbar-send" onclick="runnerSubmit(event)" title="Send">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
-          </div>
-        </div>
-      </div>
 
       <!-- GRID: INBOX + MEETINGS -->
       <div class="grid-top">
@@ -1276,68 +1233,15 @@
     row.classList.toggle('done');
   }
 
-  // ── Command bar ──
-  const ask = document.getElementById('askInput');
-  const askbar = document.getElementById('askbar');
-  const prompts = [
-    "Ask Runner to handle something…",
-    "Clear my inbox except investors…",
-    "Move my 2pm and let Peijun know…",
-    "Draft the Tom email — send on my OK…",
-    "Summarize what I missed today…",
-    "Prep me for tomorrow's meetings…"
-  ];
-  let pi = 0;
-
-  // rotate placeholder while idle
-  setInterval(function () {
-    if (document.activeElement === ask || ask.value) return;
-    ask.classList.add('ph-fade');
-    setTimeout(function () {
-      pi = (pi + 1) % prompts.length;
-      ask.placeholder = prompts[pi];
-      ask.classList.remove('ph-fade');
-    }, 260);
-  }, 3400);
-
-  ask.addEventListener('input', function () {
-    askbar.classList.toggle('has-text', !!ask.value.trim());
-  });
-  ask.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') runnerSubmit(e);
-  });
-
-  function runnerSubmit(e) {
-    if (e) e.stopPropagation();
-    if (!ask.value.trim()) { ask.focus(); return; }
-    ask.value = '';
-    askbar.classList.remove('has-text');
-    ask.placeholder = 'Runner is on it…';
-    ask.blur();
-    setTimeout(function () { ask.placeholder = prompts[pi]; }, 2400);
-  }
-
-  // ⌘K focuses the command bar
-  document.addEventListener('keydown', function (e) {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      ask.focus();
-    }
-  });
-
-  // Hand a task brief to Runner — closes drawer, opens a session prefilled with context
+  // Hand a task brief to Runner — closes drawer, opens a new session
   function handToRunner() {
     const title = (document.getElementById('taskTitle').value || '').trim();
     const brief = (document.getElementById('taskBrief').value || '').trim();
-    const pri = (document.querySelector('input[name="priority"]:checked') || {}).value || '';
-    let prompt = title || 'New task';
-    if (brief) prompt += ' — ' + brief;
-    if (pri) prompt += ' (priority: ' + pri + ')';
     document.getElementById('addTaskModal').classList.remove('open');
-    ask.value = prompt;
-    askbar.classList.add('has-text');
-    ask.focus();
-    ask.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // In production this would open a real Runner session
+    setTimeout(function() {
+      alert('Runner is on it' + (title ? ': ' + title : '') + (brief ? '\n\n' + brief : ''));
+    }, 200);
   }
 
   // Close quick-actions dropdown on outside click
