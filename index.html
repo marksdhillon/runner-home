@@ -222,8 +222,9 @@
   .askbar-orb {
     width: 22px; height: 22px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
+    font-size: 16px; filter: grayscale(1) brightness(0);
   }
-  .askbar-orb svg { width: 20px; height: 20px; }
+  
   .askbar input {
     flex: 1; min-width: 0; border: none; outline: none; background: transparent;
     font-family: var(--ui); font-size: 14.5px; color: var(--ink); letter-spacing: -0.01em;
@@ -558,12 +559,7 @@
       <!-- COMMAND BAR -->
       <div class="askbar-wrap rise d2">
         <div class="askbar" id="askbar" onclick="document.getElementById('askInput').focus()">
-          <span class="askbar-orb">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7 4h5.5C14.4 4 16 5.6 16 7.5S14.4 11 12.5 11H7V4Z" fill="var(--ink)"/>
-              <path d="M7 11h4l3.5 5.5" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            </svg>
-          </span>
+          <span class="askbar-orb">🏃</span>
           <input id="askInput" type="text" autocomplete="off" spellcheck="false" placeholder="Ask Runner to handle something…" />
           <span class="askbar-kbd">⌘K</span>
           <div class="askbar-send" onclick="runnerSubmit(event)" title="Send">
