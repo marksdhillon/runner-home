@@ -250,31 +250,25 @@
   .askbar-send:hover { transform: translateY(-1px); }
   .askbar-send svg { width: 16px; height: 16px; }
 
-  /* ── The recommendation: the agent's signature moment ── */
+  /* ── Do this first: compact inline banner ── */
   .rec {
-    position: relative; margin-bottom: 40px;
-    border-radius: var(--r-lg);
-    background:
-      linear-gradient(180deg, rgba(24,24,26,.05), rgba(24,24,26,.022));
-    border: 1px solid rgba(24,24,26,.13);
-    box-shadow: 0 1px 2px rgba(33,32,27,.04);
-    padding: 22px 24px 20px;
+    margin-bottom: 24px;
+    border-radius: var(--r-sm);
+    background: linear-gradient(180deg, rgba(24,24,26,.04), rgba(24,24,26,.02));
+    border: 1px solid rgba(24,24,26,.11);
+    padding: 10px 14px;
     overflow: hidden;
+    position: relative;
   }
   .rec::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
     background: linear-gradient(180deg, var(--accent), var(--accent-deep));
   }
-  .rec-top { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
-  .rec-label { font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-60); }
-  .rec-agent .orb::after { display: none; }
-  .rec-dismiss { margin-left: auto; color: var(--ink-32); cursor: pointer; display: flex; padding: 3px; border-radius: 5px; transition: all .12s; }
-  .rec-dismiss:hover { color: var(--ink-72); background: var(--ink-055); }
-  .rec-dismiss svg { width: 14px; height: 14px; }
-  .rec-text { font-size: 15px; line-height: 1.62; color: var(--ink-90); letter-spacing: -0.011em; max-width: 76ch; }
-  .rec-text strong { font-weight: 600; }
-  .rec-text .od { color: var(--accent-deep); font-weight: 600; }
-  .rec-actions { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+  .rec-inline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-left: 6px; }
+  .rec-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-deep); flex-shrink: 0; }
+  .rec-inline-text { font-size: 13px; color: var(--ink-72); letter-spacing: -0.006em; }
+  .rec-inline-text strong { color: var(--ink-90); font-weight: 600; }
+  .rec-inline .od { color: var(--accent-deep); font-weight: 600; }
 
   /* ── Buttons ── */
   .btn {
@@ -455,8 +449,20 @@
     <div class="tb-btn" id="sidebarToggle" title="Toggle Sidebar" onclick="document.body.classList.toggle('sidebar-collapsed');this.classList.toggle('active')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
     </div>
-    <div class="tb-btn" title="More">
-      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+    <div class="qa-wrap" id="qaWrap">
+      <div class="tb-btn" title="Quick Actions" onclick="document.getElementById('qaWrap').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+      </div>
+      <div class="qa-dropdown">
+        <div class="qa-section-label">Actions</div>
+        <div class="qa-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg> New Session <span class="qa-kbd">⌘N</span></div>
+        <div class="qa-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg> Compose Email</div>
+        <div class="qa-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg> Schedule Meeting</div>
+        <div class="qa-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg> Add Task</div>
+        <div class="qa-section-label" style="margin-top:4px">Morning Brief</div>
+        <div class="qa-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> Daily Brief · Runner</div>
+        <div class="qa-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a9 9 0 1 0 0 18A9 9 0 0 0 12 3zM3 12h18"/><path d="M12 3c-2.5 2.5-4 5.7-4 9s1.5 6.5 4 9M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9"/></svg> Open Runner App</div>
+      </div>
     </div>
   </div>
 </div>
@@ -577,25 +583,12 @@
 
       <!-- THE RECOMMENDATION -->
       <div class="rec rise d3" id="rec">
-        <div class="rec-top">
-          <span class="rec-label">Do this first</span>
-          <span class="rec-dismiss" onclick="document.getElementById('rec').style.display='none'" title="Dismiss">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          </span>
-        </div>
-        <div class="rec-text">
-          The <strong>new designs</strong> for <strong>Tom</strong> were due <span class="od">two days ago</span>. Want to wrap them now — or should I message Tom to let him know they're still in progress and land tomorrow?
-        </div>
-        <div class="rec-actions">
-          <button class="btn accent">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            Finish now
-          </button>
-          <button class="btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5h16v14H4z"/><path d="m4 7 8 6 8-6"/></svg>
-            Draft update to Tom
-          </button>
-          <button class="btn ghost sm">Snooze</button>
+        <div class="rec-inline">
+          <span class="rec-dot"></span>
+          <span class="rec-inline-text">Designs for <strong>Tom</strong> are <span class="od">2 days overdue</span> —</span>
+          <button class="btn accent sm" style="margin-left:6px;">Finish now</button>
+          <button class="btn sm">Draft update</button>
+          <button class="btn ghost sm" onclick="document.getElementById('rec').style.display='none'">Dismiss</button>
         </div>
       </div>
 
@@ -1053,6 +1046,12 @@
       e.preventDefault();
       ask.focus();
     }
+  });
+
+  // Close quick-actions dropdown on outside click
+  document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('qaWrap');
+    if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
   });
 </script>
 </body>
